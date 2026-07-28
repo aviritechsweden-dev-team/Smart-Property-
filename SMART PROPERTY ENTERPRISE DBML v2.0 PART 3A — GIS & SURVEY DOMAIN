@@ -1,0 +1,382 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 3A — GIS & SURVEY DOMAIN
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum SurveyStatus {
+  DRAFT
+  SUBMITTED
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+Enum BoundaryType {
+  PROPERTY
+  ESTATE
+  GOVERNMENT
+  RIGHT_OF_WAY
+}
+
+Enum CoordinateSystem {
+  WGS84
+  UTM
+  LOCAL_GRID
+}
+
+Enum SurveyFileType {
+  PDF
+  DWG
+  DXF
+  SHAPEFILE
+  KML
+  KMZ
+  GEOJSON
+  CSV
+}
+
+/* =====================================================
+PROPERTY LOCATION
+===================================================== */
+
+Table property_locations {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  country varchar
+
+  state varchar
+
+  lga varchar
+
+  city varchar
+
+  district varchar
+
+  community varchar
+
+  street varchar
+
+  house_number varchar
+
+  postal_code varchar
+
+  latitude decimal
+
+  longitude decimal
+
+  google_plus_code varchar
+
+  what3words varchar
+
+  elevation decimal
+
+  timezone varchar
+
+  created_at timestamp
+
+  updated_at timestamp
+
+}
+
+/* =====================================================
+LAND PARCEL
+===================================================== */
+
+Table land_parcels {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  parcel_number varchar
+
+  land_area decimal
+
+  perimeter decimal
+
+  coordinate_system CoordinateSystem
+
+  boundary_type BoundaryType
+
+  land_use varchar
+
+  zoning varchar
+
+  acquisition_date date
+
+  created_at timestamp
+
+}
+
+/* =====================================================
+BOUNDARY POLYGON
+===================================================== */
+
+Table property_boundaries {
+
+  id uuid [pk]
+
+  parcel_id uuid
+
+  title varchar
+
+  description text
+
+  total_points int
+
+  created_at timestamp
+
+}
+
+Table boundary_coordinates {
+
+  id uuid [pk]
+
+  boundary_id uuid
+
+  point_number int
+
+  latitude decimal
+
+  longitude decimal
+
+  elevation decimal
+
+  bearing decimal
+
+  distance decimal
+
+}
+
+/* =====================================================
+SURVEY PLANS
+===================================================== */
+
+Table surveys {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  surveyor_id uuid
+
+  survey_number varchar
+
+  survey_status SurveyStatus
+
+  survey_date date
+
+  survey_company varchar
+
+  survey_reference varchar
+
+  remarks text
+
+  created_at timestamp
+
+}
+
+Table survey_files {
+
+  id uuid [pk]
+
+  survey_id uuid
+
+  file_type SurveyFileType
+
+  file_name varchar
+
+  file_url text
+
+  uploaded_by uuid
+
+  uploaded_at timestamp
+
+}
+
+/* =====================================================
+SURVEYORS
+===================================================== */
+
+Table surveyors {
+
+  id uuid [pk]
+
+  user_id uuid
+
+  organization_id uuid
+
+  license_number varchar
+
+  registration_body varchar
+
+  years_of_experience int
+
+  verified boolean
+
+}
+
+/* =====================================================
+BEACONS
+===================================================== */
+
+Table beacons {
+
+  id uuid [pk]
+
+  boundary_id uuid
+
+  beacon_number varchar
+
+  latitude decimal
+
+  longitude decimal
+
+  installed_date date
+
+  condition varchar
+
+}
+
+/* =====================================================
+NEIGHBOURING PROPERTIES
+===================================================== */
+
+Table neighbouring_properties {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  neighbouring_property_id uuid
+
+  direction varchar
+
+}
+
+/* =====================================================
+LANDMARKS
+===================================================== */
+
+Table landmarks {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  category varchar
+
+  name varchar
+
+  latitude decimal
+
+  longitude decimal
+
+  distance decimal
+
+}
+
+/* =====================================================
+MAP LAYERS
+===================================================== */
+
+Table map_layers {
+
+  id uuid [pk]
+
+  name varchar
+
+  provider varchar
+
+  layer_type varchar
+
+  enabled boolean
+
+}
+
+/* =====================================================
+GEO IMPORT HISTORY
+===================================================== */
+
+Table geo_imports {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  imported_by uuid
+
+  format SurveyFileType
+
+  source varchar
+
+  status varchar
+
+  imported_at timestamp
+
+}
+
+/* =====================================================
+DRONE SURVEYS (Future Ready)
+===================================================== */
+
+Table drone_surveys {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  operator_id uuid
+
+  flight_date date
+
+  altitude decimal
+
+  image_count int
+
+  orthomosaic_url text
+
+  point_cloud_url text
+
+}
+
+/* =====================================================
+RELATIONSHIPS
+===================================================== */
+
+Ref: property_locations.property_id > properties.id
+
+Ref: land_parcels.property_id > properties.id
+
+Ref: property_boundaries.parcel_id > land_parcels.id
+
+Ref: boundary_coordinates.boundary_id > property_boundaries.id
+
+Ref: surveys.property_id > properties.id
+Ref: surveys.surveyor_id > surveyors.id
+
+Ref: survey_files.survey_id > surveys.id
+Ref: survey_files.uploaded_by > users.id
+
+Ref: surveyors.user_id > users.id
+Ref: surveyors.organization_id > organizations.id
+
+Ref: beacons.boundary_id > property_boundaries.id
+
+Ref: neighbouring_properties.property_id > properties.id
+Ref: neighbouring_properties.neighbouring_property_id > properties.id
+
+Ref: landmarks.property_id > properties.id
+
+Ref: geo_imports.property_id > properties.id
+Ref: geo_imports.imported_by > users.id
+
+Ref: drone_surveys.property_id > properties.id
+Ref: drone_surveys.operator_id > users.id
