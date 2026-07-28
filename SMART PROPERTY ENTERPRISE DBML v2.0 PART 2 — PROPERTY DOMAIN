@@ -1,0 +1,550 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 2 — PROPERTY DOMAIN
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum OwnershipType {
+  INDIVIDUAL
+  JOINT
+  ORGANIZATION
+  GOVERNMENT
+  TRUST
+  TOKENIZED
+}
+
+Enum AgentAssignmentStatus {
+  ACTIVE
+  RELEASED
+  SUSPENDED
+}
+
+Enum PropertyCondition {
+  OFF_PLAN
+  UNDER_CONSTRUCTION
+  NEW
+  FAIRLY_USED
+  RENOVATED
+  OLD
+}
+
+Enum FurnishingStatus {
+  UNFURNISHED
+  SEMI_FURNISHED
+  FULLY_FURNISHED
+}
+
+Enum MediaType {
+  IMAGE
+  VIDEO
+  FLOOR_PLAN
+  DOCUMENT
+  DRONE_VIDEO
+  VIRTUAL_TOUR
+}
+
+Enum TimelineEventType {
+  CREATED
+  UPDATED
+  VERIFIED
+  INSPECTED
+  VALUED
+  TRUST_APPROVED
+  BLOCKCHAIN_REGISTERED
+  RENTED
+  SOLD
+  LEASE_RENEWED
+  MAINTENANCE_COMPLETED
+}
+
+/* =====================================================
+ESTATES
+===================================================== */
+
+Table estates {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  name varchar
+
+  slug varchar
+
+  description text
+
+  address text
+
+  city varchar
+
+  state varchar
+
+  country varchar
+
+  postal_code varchar
+
+  latitude decimal
+
+  longitude decimal
+
+  total_land_area decimal
+
+  total_blocks int
+
+  total_properties int
+
+  status varchar
+
+  created_at timestamp
+
+  updated_at timestamp
+
+}
+
+Table estate_phases {
+
+  id uuid [pk]
+
+  estate_id uuid
+
+  name varchar
+
+  description text
+
+  phase_number int
+
+  created_at timestamp
+
+}
+
+Table estate_blocks {
+
+  id uuid [pk]
+
+  phase_id uuid
+
+  block_name varchar
+
+  description text
+
+}
+
+/* =====================================================
+PROPERTY
+===================================================== */
+
+Table properties {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  estate_id uuid
+
+  phase_id uuid
+
+  block_id uuid
+
+  property_code varchar [unique]
+
+  slug varchar [unique]
+
+  title varchar
+
+  description text
+
+  listing_type ListingType
+
+  property_type PropertyType
+
+  property_status PropertyStatus
+
+  condition PropertyCondition
+
+  furnishing FurnishingStatus
+
+  price decimal
+
+  service_charge decimal
+
+  caution_fee decimal
+
+  annual_rent decimal
+
+  security_deposit decimal
+
+  bedrooms int
+
+  bathrooms int
+
+  toilets int
+
+  kitchens int
+
+  parking_spaces int
+
+  floors int
+
+  year_built int
+
+  land_area decimal
+
+  building_area decimal
+
+  address text
+
+  city varchar
+
+  state varchar
+
+  country varchar
+
+  postal_code varchar
+
+  latitude decimal
+
+  longitude decimal
+
+  trust_score decimal
+
+  published boolean
+
+  featured boolean
+
+  views bigint
+
+  created_at timestamp
+
+  updated_at timestamp
+
+}
+
+/* =====================================================
+PROPERTY UNITS
+===================================================== */
+
+Table property_units {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  unit_number varchar
+
+  unit_name varchar
+
+  floor varchar
+
+  bedrooms int
+
+  bathrooms int
+
+  toilets int
+
+  area decimal
+
+  rent decimal
+
+  status varchar
+
+}
+
+/* =====================================================
+PROPERTY OWNERS
+===================================================== */
+
+Table property_owners {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  owner_id uuid
+
+  organization_id uuid
+
+  ownership_type OwnershipType
+
+  ownership_percentage decimal
+
+  start_date date
+
+  end_date date
+
+  is_primary boolean
+
+}
+
+/* =====================================================
+PROPERTY AGENTS
+===================================================== */
+
+Table property_agent_assignments {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  agent_id uuid
+
+  assigned_by uuid
+
+  assignment_reason text
+
+  status AgentAssignmentStatus
+
+  assigned_at timestamp
+
+  released_at timestamp
+
+}
+
+/* =====================================================
+AMENITIES
+===================================================== */
+
+Table amenities {
+
+  id uuid [pk]
+
+  name varchar
+
+  icon varchar
+
+  category varchar
+
+}
+
+Table property_amenities {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  amenity_id uuid
+
+}
+
+/* =====================================================
+PROPERTY FEATURES
+===================================================== */
+
+Table property_features {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  feature_name varchar
+
+  feature_value varchar
+
+}
+
+/* =====================================================
+MEDIA
+===================================================== */
+
+Table property_media {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  media_type MediaType
+
+  file_url text
+
+  thumbnail_url text
+
+  caption varchar
+
+  file_size bigint
+
+  display_order int
+
+  uploaded_by uuid
+
+}
+
+/* =====================================================
+WALKTHROUGH VIDEOS
+===================================================== */
+
+Table walkthrough_videos {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  title varchar
+
+  description text
+
+  video_url text
+
+  duration int
+
+  thumbnail text
+
+}
+
+/* =====================================================
+360 TOURS
+===================================================== */
+
+Table virtual_tours {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  title varchar
+
+  provider varchar
+
+  embed_url text
+
+}
+
+/* =====================================================
+PROPERTY HISTORY
+===================================================== */
+
+Table property_price_history {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  old_price decimal
+
+  new_price decimal
+
+  changed_by uuid
+
+  changed_at timestamp
+
+}
+
+Table property_status_history {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  old_status PropertyStatus
+
+  new_status PropertyStatus
+
+  changed_by uuid
+
+  changed_at timestamp
+
+}
+
+Table property_timeline {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  event TimelineEventType
+
+  description text
+
+  performed_by uuid
+
+  created_at timestamp
+
+}
+
+/* =====================================================
+USER INTERACTION
+===================================================== */
+
+Table property_favorites {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  user_id uuid
+
+  created_at timestamp
+
+}
+
+Table property_reviews {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  reviewer_id uuid
+
+  rating int
+
+  review text
+
+  created_at timestamp
+
+}
+
+/* =====================================================
+RELATIONSHIPS
+===================================================== */
+
+Ref: estates.organization_id > organizations.id
+
+Ref: estate_phases.estate_id > estates.id
+
+Ref: estate_blocks.phase_id > estate_phases.id
+
+Ref: properties.organization_id > organizations.id
+
+Ref: properties.estate_id > estates.id
+
+Ref: properties.phase_id > estate_phases.id
+
+Ref: properties.block_id > estate_blocks.id
+
+Ref: property_units.property_id > properties.id
+
+Ref: property_owners.property_id > properties.id
+Ref: property_owners.owner_id > users.id
+Ref: property_owners.organization_id > organizations.id
+
+Ref: property_agent_assignments.property_id > properties.id
+Ref: property_agent_assignments.agent_id > users.id
+Ref: property_agent_assignments.assigned_by > users.id
+
+Ref: property_amenities.property_id > properties.id
+Ref: property_amenities.amenity_id > amenities.id
+
+Ref: property_features.property_id > properties.id
+
+Ref: property_media.property_id > properties.id
+Ref: property_media.uploaded_by > users.id
+
+Ref: walkthrough_videos.property_id > properties.id
+
+Ref: virtual_tours.property_id > properties.id
+
+Ref: property_price_history.property_id > properties.id
+Ref: property_price_history.changed_by > users.id
+
+Ref: property_status_history.property_id > properties.id
+Ref: property_status_history.changed_by > users.id
+
+Ref: property_timeline.property_id > properties.id
+Ref: property_timeline.performed_by > users.id
+
+Ref: property_favorites.property_id > properties.id
+Ref: property_favorites.user_id > users.id
+
+Ref: property_reviews.property_id > properties.id
+Ref: property_reviews.reviewer_id > users.id
