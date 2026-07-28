@@ -1,0 +1,566 @@
+SOFTWARE REQUIREMENTS SPECIFICATION (SRS)
+
+Smart Property
+
+The Digital Real Estate Ecosystem
+
+Document Version: 1.0
+
+Project Name: Smart Property
+
+Prepared For: Aviritech
+
+Prepared By: Product Architecture Team
+
+---
+
+1. Introduction
+
+1.1 Purpose
+
+This Software Requirements Specification (SRS) defines the functional and non-functional requirements for Smart Property, a comprehensive enterprise PropTech platform that digitizes the entire property lifecycle.
+
+The document serves as the technical blueprint for software engineers, solution architects, product managers, QA engineers, DevOps engineers, UI/UX designers, and project stakeholders.
+
+---
+
+2. Product Overview
+
+Smart Property is a unified digital real estate ecosystem that enables users to:
+
+- Buy, rent and sell properties
+- Manage estates
+- Manage shortlets
+- Hire verified professionals
+- Pay rent and utility bills
+- Pay with cryptocurrency or traditional payment methods
+- Invest in tokenized real estate
+- Verify properties through the Smart Trust process
+- Store and manage BIM models
+- Capture GIS coordinates
+- Track complete property history
+- Manage digital property documents
+
+---
+
+3. Business Goals
+
+The system shall:
+
+- Reduce real estate fraud
+- Increase trust in property transactions
+- Digitize property verification
+- Enable secure digital documentation
+- Improve property management
+- Simplify property investment
+- Improve agent productivity
+- Support digital property ownership
+- Enable blockchain-backed trust certification
+
+---
+
+4. User Roles
+
+The platform shall support the following roles:
+
+- Super Administrator
+- Administrator
+- Property Owner
+- Estate Manager
+- Agent
+- Tenant
+- Buyer
+- Investor
+- Vendor
+- Surveyor
+- Valuer
+- Legal Officer
+- Customer Support
+
+Each role shall have configurable permissions through Role-Based Access Control (RBAC).
+
+---
+
+5. Functional Modules
+
+Module 1 — Authentication & Identity
+
+Features
+
+- Registration
+- Login
+- Password Reset
+- Email Verification
+- Social Login
+- Session Management
+- Device Management
+- Role Assignment
+- Profile Management
+
+Authentication Provider:
+
+- Clerk
+
+---
+
+Module 2 — Property Management
+
+Property Types
+
+- Residential
+- Commercial
+- Land
+- Shortlet
+- Estate
+- Office
+- Hostel
+- Warehouse
+
+Features
+
+- Create Property
+- Edit Property
+- Archive Property
+- Delete Property
+- Restore Property
+- Duplicate Property
+- Assign Agent
+- Assign Owner
+- Upload Images
+- Upload Videos
+- Upload Floor Plans
+- Upload Documents
+- Upload BIM Models
+- Publish Property
+
+---
+
+Module 3 — GIS & Survey
+
+Features
+
+- Capture Coordinates
+- Draw Land Polygon
+- Import Survey Coordinates
+- Upload Survey Plans
+- GeoJSON Support
+- KML/KMZ Support
+- CSV Coordinate Import
+- Satellite View
+- Parcel Mapping
+- Estate Mapping
+- Land Area Calculation
+- Perimeter Calculation
+- Nearby Landmark Detection
+
+---
+
+Module 4 — Smart Trust™
+
+The Smart Trust™ process validates every property before certification.
+
+Workflow
+
+1. Property Submission
+2. Document Verification
+3. Survey Verification
+4. Physical Inspection
+5. Property Valuation
+6. Legal Due Diligence
+7. Administrative Approval
+8. Blockchain Registration
+9. Smart Trust Certificate Issuance
+
+Trust Status
+
+- Draft
+- Submitted
+- Under Review
+- Documents Verified
+- Survey Verified
+- Valuation Complete
+- Legal Cleared
+- Approved
+- Blockchain Registered
+- Certified
+- Rejected
+
+---
+
+Module 5 — Blockchain Registry
+
+The blockchain registry shall store:
+
+- Property Hash
+- Document Hash
+- Valuation Hash
+- Smart Trust Certificate Hash
+- Smart Contract Address
+- Transaction Hash
+- Block Number
+- Timestamp
+- Blockchain Explorer URL
+- QR Verification Code
+
+---
+
+Module 6 — Document Management System (DMS)
+
+Supported Documents
+
+- Certificate of Occupancy (C of O)
+- Governor's Consent
+- Deed of Assignment
+- Survey Plan
+- Gazette
+- Excision Documents
+- Building Approval
+- Valuation Report
+- Legal Opinion
+- Property Agreements
+- Receipts
+- Invoices
+- Other Supporting Documents
+
+Features
+
+- Version Control
+- Approval Workflow
+- Secure Storage
+- Digital Signatures (Future)
+- Audit Trail
+- Document Sharing
+- Expiry Notifications
+
+---
+
+Module 7 — BIM Management (Smart BIM™)
+
+Supported Formats
+
+- IFC
+- RVT
+- DWG
+- DXF
+- PDF
+- COBie (Future)
+
+Features
+
+- Upload BIM Models
+- Browser Viewer
+- Version History
+- Download
+- Permission Management
+- Annotation (Future)
+- Digital Twin Support (Future)
+
+---
+
+Module 8 — Property Media
+
+Supported Media
+
+- Images
+- Videos
+- Drone Videos
+- Walkthrough Videos
+- 360° Tours
+- Floor Plans
+- Documents
+
+Media shall support:
+
+- Compression
+- Watermarking
+- Ordering
+- Captions
+- Thumbnails
+
+---
+
+Module 9 — Booking Management
+
+Supported Bookings
+
+- Inspection Booking
+- Property Viewing
+- Shortlet Reservation
+
+Each booking shall record:
+
+- Customer
+- Property
+- Assigned Agent
+- Booking Fee
+- Payment Status
+- Booking Status
+- Inspection Date
+- Notes
+
+---
+
+Module 10 — Rental Management
+
+Features
+
+- Lease Management
+- Rent Collection
+- Rent Schedule
+- Receipts
+- Renewal
+- Notices
+- Occupancy Tracking
+
+---
+
+Module 11 — Property Sales
+
+Features
+
+- Property Purchase
+- Offer Submission
+- Negotiation
+- Contract Generation
+- Closing
+- Ownership Transfer
+
+---
+
+Module 12 — Tokenized Real Estate (Smart Invest™)
+
+Features
+
+- Create Investment Projects
+- Issue Tokens
+- Investor Dashboard
+- Portfolio Management
+- Fractional Ownership
+- Ownership Certificates
+- Investment Reports
+
+---
+
+Module 13 — Vendor Marketplace (Smart Services™)
+
+Supported Vendors
+
+- Electricians
+- Plumbers
+- Carpenters
+- Architects
+- Surveyors
+- Lawyers
+- Painters
+- Interior Designers
+- Security Companies
+- Movers
+- Cleaners
+- HVAC Technicians
+- Internet Providers
+
+Features
+
+- Vendor Registration
+- Verification
+- Portfolio
+- Ratings
+- Reviews
+- Booking
+- Job Tracking
+- Payments
+
+---
+
+Module 14 — Estate Bills
+
+Supported Bills
+
+- Estate Levy
+- Security Fee
+- Electricity
+- Water
+- Waste Disposal
+- Internet
+- Cable TV
+- Maintenance Fee
+- Facility Charge
+
+Features
+
+- Bill Generation
+- Bill Payment
+- Recurring Bills
+- Receipts
+- Reminders
+
+---
+
+Module 15 — Wallet & Payments (Smart Wallet™)
+
+Supported Payment Methods
+
+- Card
+- Bank Transfer
+- Wallet Balance
+- Cryptocurrency
+
+Supported Transactions
+
+- Rent
+- Property Purchase
+- Shortlet
+- Vendor Payment
+- Estate Bills
+- Booking Fee
+- Investment
+- Refunds
+- Agent Commissions
+
+---
+
+Module 16 — Agent Management
+
+Features
+
+- Agent Registration
+- Property Assignment
+- Performance Dashboard
+- Commission Ledger
+- Earnings Reports
+- Payout Requests
+- Monthly Performance Reports
+
+---
+
+Module 17 — Notification Center
+
+Notification Channels
+
+- Email
+- SMS
+- Push Notifications
+- In-App Notifications
+
+Notification Types
+
+- Booking Updates
+- Payment Confirmations
+- Trust Status Updates
+- Property Approval
+- Vendor Requests
+- Investment Updates
+
+---
+
+Module 18 — Reports & Analytics
+
+Reports
+
+- Revenue
+- Occupancy
+- Trust Certificates
+- Bookings
+- Sales
+- Investments
+- Vendor Performance
+- Agent Performance
+- Estate Collections
+- Payment Analytics
+
+Dashboards
+
+- Executive Dashboard
+- Admin Dashboard
+- Agent Dashboard
+- Property Owner Dashboard
+- Investor Dashboard
+- Vendor Dashboard
+
+---
+
+Module 19 — Audit & Compliance
+
+The platform shall log all critical events.
+
+Examples
+
+- User Login
+- Property Created
+- Property Updated
+- Trust Approved
+- Blockchain Registered
+- Payment Processed
+- Token Purchased
+- Bill Paid
+- Vendor Approved
+
+Audit logs shall be immutable and searchable.
+
+---
+
+Module 20 — Workflow Engine
+
+The system shall support configurable workflows for:
+
+- Property Approval
+- Trust Certification
+- Legal Review
+- Property Valuation
+- Vendor Verification
+- Investment Approval
+- Document Approval
+
+Future workflows should be configurable without requiring code changes.
+
+---
+
+6. Non-Functional Requirements
+
+Security
+
+- TLS Encryption
+- RBAC Authorization
+- Input Validation
+- Rate Limiting
+- Secure Secrets Management
+- Audit Logging
+- Data Encryption at Rest
+
+Performance
+
+- Dashboard load time under 3 seconds
+- Search response under 2 seconds
+- Optimized media delivery
+- Lazy loading for large BIM files
+
+Scalability
+
+- Modular architecture
+- Stateless services
+- Horizontal scaling
+- Background job processing
+- CDN for media assets
+
+Availability
+
+Target uptime: 99.9%
+
+Maintainability
+
+- Clean Architecture
+- SOLID Principles
+- TypeScript
+- Automated Testing
+- API Documentation
+- Coding Standards
+
+Compliance
+
+The platform shall support:
+
+- Nigerian Data Protection requirements
+- Secure document management
+- Property verification processes
+- Digital audit trails
+- Blockchain-backed proof of integrity
