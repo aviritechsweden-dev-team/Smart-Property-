@@ -1,0 +1,487 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 4 — DOCUMENT MANAGEMENT SYSTEM (DMS) & SMART BIM™
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum DocumentCategory {
+  TITLE_DEED
+  CERTIFICATE_OF_OCCUPANCY
+  DEED_OF_ASSIGNMENT
+  SURVEY_PLAN
+  BUILDING_PLAN
+  APPROVED_PLAN
+  TAX_DOCUMENT
+  RECEIPT
+  CONTRACT
+  AGREEMENT
+  IDENTIFICATION
+  LEGACY_DOCUMENT
+  OTHER
+}
+
+Enum DocumentStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+Enum DocumentVisibility {
+  PRIVATE
+  ORGANIZATION
+  VERIFIED_USERS
+  PUBLIC
+}
+
+Enum SignatureStatus {
+  PENDING
+  SIGNED
+  REJECTED
+  EXPIRED
+}
+
+Enum BIMFormat {
+  IFC
+  RVT
+  DWG
+  DXF
+  NWD
+  SKP
+  OBJ
+  FBX
+}
+
+Enum BIMIssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+Enum BIMIssueStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+/* =====================================================
+DOCUMENTS
+===================================================== */
+
+Table documents {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  property_id uuid
+
+  category DocumentCategory
+
+  title varchar
+
+  description text
+
+  document_number varchar
+
+  current_version int
+
+  status DocumentStatus
+
+  visibility DocumentVisibility
+
+  owner_id uuid
+
+  checksum varchar
+
+  file_size bigint
+
+  mime_type varchar
+
+  created_at timestamp
+
+  updated_at timestamp
+
+}
+
+Table document_versions {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  version_number int
+
+  file_name varchar
+
+  file_url text
+
+  checksum varchar
+
+  uploaded_by uuid
+
+  upload_date timestamp
+
+  change_log text
+
+}
+
+Table document_tags {
+
+  id uuid [pk]
+
+  name varchar
+
+}
+
+Table document_tag_map {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  tag_id uuid
+
+}
+
+Table document_comments {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  user_id uuid
+
+  comment text
+
+  created_at timestamp
+
+}
+
+Table document_approvals {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  approver_id uuid
+
+  status DocumentStatus
+
+  remarks text
+
+  approved_at timestamp
+
+}
+
+Table document_access_logs {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  user_id uuid
+
+  action varchar
+
+  ip_address varchar
+
+  accessed_at timestamp
+
+}
+
+/* =====================================================
+DIGITAL SIGNATURES
+===================================================== */
+
+Table digital_signatures {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  signer_id uuid
+
+  signature_hash text
+
+  status SignatureStatus
+
+  signed_at timestamp
+
+}
+
+/* =====================================================
+DOCUMENT SHARING
+===================================================== */
+
+Table document_shares {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  shared_by uuid
+
+  shared_with uuid
+
+  permission varchar
+
+  expires_at timestamp
+
+}
+
+/* =====================================================
+PROPERTY WALKTHROUGHS
+===================================================== */
+
+Table walkthrough_sessions {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  title varchar
+
+  video_url text
+
+  duration int
+
+  narrator varchar
+
+  published boolean
+
+}
+
+/* =====================================================
+BIM MODELS
+===================================================== */
+
+Table bim_models {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  uploaded_by uuid
+
+  model_name varchar
+
+  format BIMFormat
+
+  current_version int
+
+  file_size bigint
+
+  status varchar
+
+  created_at timestamp
+
+}
+
+Table bim_versions {
+
+  id uuid [pk]
+
+  model_id uuid
+
+  version_number int
+
+  file_url text
+
+  uploaded_by uuid
+
+  upload_date timestamp
+
+  notes text
+
+}
+
+Table bim_elements {
+
+  id uuid [pk]
+
+  model_id uuid
+
+  element_guid varchar
+
+  element_type varchar
+
+  level_name varchar
+
+  family_name varchar
+
+  category varchar
+
+}
+
+Table bim_annotations {
+
+  id uuid [pk]
+
+  model_id uuid
+
+  user_id uuid
+
+  element_guid varchar
+
+  annotation text
+
+  created_at timestamp
+
+}
+
+Table bim_issues {
+
+  id uuid [pk]
+
+  model_id uuid
+
+  element_guid varchar
+
+  created_by uuid
+
+  assigned_to uuid
+
+  priority BIMIssuePriority
+
+  status BIMIssueStatus
+
+  title varchar
+
+  description text
+
+  due_date date
+
+}
+
+Table bim_issue_comments {
+
+  id uuid [pk]
+
+  issue_id uuid
+
+  user_id uuid
+
+  comment text
+
+  created_at timestamp
+
+}
+
+/* =====================================================
+DIGITAL TWIN (Future Ready)
+===================================================== */
+
+Table digital_twins {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  bim_model_id uuid
+
+  twin_identifier varchar
+
+  version varchar
+
+  sync_status varchar
+
+}
+
+Table iot_devices {
+
+  id uuid [pk]
+
+  digital_twin_id uuid
+
+  device_name varchar
+
+  device_type varchar
+
+  serial_number varchar
+
+  manufacturer varchar
+
+  installation_date date
+
+}
+
+Table sensor_readings {
+
+  id uuid [pk]
+
+  device_id uuid
+
+  reading_type varchar
+
+  reading_value decimal
+
+  unit varchar
+
+  recorded_at timestamp
+
+}
+
+/* =====================================================
+RELATIONSHIPS
+===================================================== */
+
+Ref: documents.organization_id > organizations.id
+Ref: documents.property_id > properties.id
+Ref: documents.owner_id > users.id
+
+Ref: document_versions.document_id > documents.id
+Ref: document_versions.uploaded_by > users.id
+
+Ref: document_tag_map.document_id > documents.id
+Ref: document_tag_map.tag_id > document_tags.id
+
+Ref: document_comments.document_id > documents.id
+Ref: document_comments.user_id > users.id
+
+Ref: document_approvals.document_id > documents.id
+Ref: document_approvals.approver_id > users.id
+
+Ref: document_access_logs.document_id > documents.id
+Ref: document_access_logs.user_id > users.id
+
+Ref: digital_signatures.document_id > documents.id
+Ref: digital_signatures.signer_id > users.id
+
+Ref: document_shares.document_id > documents.id
+Ref: document_shares.shared_by > users.id
+Ref: document_shares.shared_with > users.id
+
+Ref: walkthrough_sessions.property_id > properties.id
+
+Ref: bim_models.property_id > properties.id
+Ref: bim_models.uploaded_by > users.id
+
+Ref: bim_versions.model_id > bim_models.id
+Ref: bim_versions.uploaded_by > users.id
+
+Ref: bim_elements.model_id > bim_models.id
+
+Ref: bim_annotations.model_id > bim_models.id
+Ref: bim_annotations.user_id > users.id
+
+Ref: bim_issues.model_id > bim_models.id
+Ref: bim_issues.created_by > users.id
+Ref: bim_issues.assigned_to > users.id
+
+Ref: bim_issue_comments.issue_id > bim_issues.id
+Ref: bim_issue_comments.user_id > users.id
+
+Ref: digital_twins.property_id > properties.id
+Ref: digital_twins.bim_model_id > bim_models.id
+
+Ref: iot_devices.digital_twin_id > digital_twins.id
+
+Ref: sensor_readings.device_id > iot_devices.id
