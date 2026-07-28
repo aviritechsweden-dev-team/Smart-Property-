@@ -1,0 +1,456 @@
+PropTech Backend API
+
+A scalable, production-ready backend service powering the PropTech platform.
+
+This API provides authentication, authorization, property management, user management, bookings, payments, and other business services for the platform.
+
+---
+
+Technology Stack
+
+Backend
+
+- Node.js
+- Express.js
+- TypeScript
+
+Database
+
+- MySQL
+- Prisma ORM
+
+Authentication
+
+- Clerk Authentication
+- Role-Based Access Control (RBAC)
+
+Validation
+
+- Zod
+
+Security
+
+- Helmet
+- CORS
+- Rate Limiting
+- Environment Variables
+
+Development
+
+- ESLint
+- Prettier
+- Nodemon
+
+---
+
+Project Goals
+
+The backend is designed to:
+
+- Provide secure REST APIs.
+- Manage application data.
+- Authenticate and authorize users.
+- Serve the React frontend.
+- Scale as the platform grows.
+
+---
+
+Project Structure
+
+src/
+│
+├── controllers/
+│
+├── routes/
+│
+├── middleware/
+│
+├── services/
+│
+├── repositories/
+│
+├── prisma/
+│
+├── config/
+│
+├── utils/
+│
+├── types/
+│
+├── validators/
+│
+├── interfaces/
+│
+├── constants/
+│
+├── app.ts
+│
+└── server.ts
+
+---
+
+Architecture
+
+The project follows a layered architecture.
+
+React Frontend
+        │
+        ▼
+Express Routes
+        │
+        ▼
+Controllers
+        │
+        ▼
+Services
+        │
+        ▼
+Repositories / Prisma
+        │
+        ▼
+MySQL Database
+
+Each layer has a single responsibility.
+
+---
+
+Authentication
+
+Authentication is managed using Clerk.
+
+Responsibilities include:
+
+- User Registration
+- User Login
+- Session Management
+- Token Validation
+- Protected Routes
+- Role Verification
+
+No custom password storage is required.
+
+---
+
+User Roles
+
+The system supports role-based authorization.
+
+Example roles:
+
+- Super Admin
+- Admin
+- Agent
+- Customer
+
+Middleware is responsible for ensuring users can only access authorized resources.
+
+---
+
+Database
+
+Database access is managed entirely through Prisma.
+
+Example workflow:
+
+1. Update schema.prisma
+2. Run migrations
+3. Generate Prisma Client
+4. Access the database through Prisma
+
+Raw SQL should only be used when absolutely necessary.
+
+---
+
+API Standards
+
+All endpoints return JSON.
+
+Example success response:
+
+{
+  "success": true,
+  "message": "Property created successfully.",
+  "data": {}
+}
+
+Example error response:
+
+{
+  "success": false,
+  "message": "Validation failed.",
+  "errors": []
+}
+
+---
+
+HTTP Status Codes
+
+Status| Meaning
+200| OK
+201| Created
+204| No Content
+400| Bad Request
+401| Unauthorized
+403| Forbidden
+404| Not Found
+409| Conflict
+422| Validation Error
+500| Internal Server Error
+
+---
+
+API Modules
+
+The application is divided into feature modules.
+
+Authentication
+
+- Register User
+- Login
+- Logout
+- Current User
+- Refresh Session
+
+Users
+
+- Create User
+- Update User
+- Delete User
+- List Users
+
+Roles
+
+- Create Role
+- Assign Role
+- Update Permissions
+
+Properties
+
+- Create Property
+- Update Property
+- Delete Property
+- Get Property
+- Search Properties
+- Upload Images
+
+Agents
+
+- Register Agent
+- Update Agent
+- Assign Properties
+
+Bookings
+
+- Create Booking
+- Cancel Booking
+- Booking History
+
+Payments
+
+- Initialize Payment
+- Verify Payment
+- Payment History
+
+---
+
+Validation
+
+All incoming requests must be validated before reaching the service layer.
+
+Validation includes:
+
+- Required fields
+- Email format
+- Phone numbers
+- UUIDs
+- Numeric values
+- Dates
+
+---
+
+Error Handling
+
+The application uses centralized error handling.
+
+Benefits include:
+
+- Consistent API responses
+- Easier debugging
+- Better logging
+
+---
+
+Environment Variables
+
+Example:
+
+PORT=5000
+
+DATABASE_URL=
+
+CLERK_SECRET_KEY=
+
+CLERK_PUBLISHABLE_KEY=
+
+NODE_ENV=development
+
+Never commit the ".env" file.
+
+---
+
+Development Workflow
+
+1. Pull latest changes.
+2. Create a feature branch.
+3. Implement feature.
+4. Write tests.
+5. Open Pull Request.
+6. Code Review.
+7. Merge into main.
+
+---
+
+Git Branch Strategy
+
+main
+
+Production-ready code.
+
+develop
+
+Integration branch.
+
+feature/<feature-name>
+
+Feature development.
+
+fix/<issue>
+
+Bug fixes.
+
+hotfix/<issue>
+
+Production fixes.
+
+---
+
+Coding Standards
+
+- Use TypeScript.
+- Use async/await.
+- Avoid callback-based code.
+- Keep functions small.
+- Follow SOLID principles.
+- Write reusable services.
+- Avoid duplicated logic.
+- Never expose secrets.
+
+---
+
+API Security
+
+The API implements:
+
+- Authentication
+- Authorization
+- Input Validation
+- Rate Limiting
+- CORS
+- Helmet
+- Secure Environment Variables
+
+---
+
+Logging
+
+Application logs should include:
+
+- Requests
+- Errors
+- Authentication events
+- Database failures
+
+Sensitive information must never be logged.
+
+---
+
+Testing
+
+Testing should cover:
+
+- Unit Tests
+- Integration Tests
+- Endpoint Tests
+
+Every new feature should include appropriate test coverage.
+
+---
+
+Deployment
+
+Production checklist:
+
+- Build application
+- Run Prisma migrations
+- Configure environment variables
+- Enable HTTPS
+- Configure logging
+- Verify Clerk configuration
+- Monitor application health
+
+---
+
+Contribution Guide
+
+Before submitting code:
+
+- Pull latest changes.
+- Follow coding standards.
+- Ensure linting passes.
+- Ensure tests pass.
+- Document new endpoints if applicable.
+- Request code review.
+
+---
+
+Future Improvements
+
+- Email Notifications
+- Push Notifications
+- Property Recommendations
+- Saved Searches
+- Analytics Dashboard
+- Audit Logs
+- Multi-Tenant Support
+- Background Job Processing
+- WebSockets for Real-Time Updates
+- File Storage Integration
+
+---
+
+License
+
+This project is proprietary and maintained by the organization.
+
+Unauthorized distribution, modification, or commercial use without written permission is prohibited.
+
+---
+
+Maintainers
+
+Backend Engineering Team
+
+Built with Node.js, TypeScript, Express, Prisma, MySQL, and Clerk Authentication.This README is an excellent starting point. As your project matures, I'd also recommend adding separate documents such as:
+
+CONTRIBUTING.md – contribution workflow and code review guidelines.
+
+API.md – detailed endpoint documentation with request/response examples.
+
+ARCHITECTURE.md – system design, sequence diagrams, and database relationships.
+
+SECURITY.md – authentication flow, RBAC, and security practices.
+
+CHANGELOG.md – release notes and version history.
+
+
+Keeping these documents separate makes the repository easier to navigate and maintain as the project grows.
