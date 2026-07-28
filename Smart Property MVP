@@ -1,0 +1,316 @@
+Developer Sprint 1 Development Guide—a day-by-day plan with exactly what to build, so you never wonder "what should I work on today?"
+
+Smart Property MVP
+
+Sprint 1 (Week 1)
+
+Goal: Set up a production-ready foundation.
+
+
+---
+
+Day 1 — Project Setup
+
+Tasks
+
+Create Next.js 15 project
+
+Initialize Git repository
+
+Configure TypeScript
+
+Install Tailwind CSS
+
+Install shadcn/ui
+
+Set up ESLint and Prettier
+
+
+Install
+
+npx create-next-app@latest smart-property
+
+Packages:
+
+Prisma
+
+MySQL2
+
+Clerk
+
+Zod
+
+React Hook Form
+
+TanStack Query
+
+Zustand
+
+Lucide React
+
+React Hot Toast
+
+date-fns
+
+
+Deliverable
+
+✅ Project runs successfully.
+
+
+---
+
+Day 2 — Database
+
+Tasks
+
+Install Prisma
+
+Configure MySQL
+
+Create .env
+
+Initialize Prisma
+
+Create first migration
+
+Seed database
+
+
+Deliverable
+
+✅ Database connected.
+
+
+---
+
+Day 3 — Authentication
+
+Tasks
+
+Create Clerk account
+
+Configure Clerk
+
+Add middleware
+
+Login page
+
+Register page
+
+Protected dashboard
+
+
+Deliverable
+
+✅ Authentication working.
+
+
+---
+
+Day 4 — Project Structure
+
+Create folders:
+
+app/
+components/
+features/
+lib/
+server/
+prisma/
+types/
+hooks/
+emails/
+jobs/
+
+Inside features/:
+
+auth/
+property/
+booking/
+payment/
+wallet/
+organization/
+user/
+
+Deliverable
+
+✅ Clean architecture ready.
+
+
+---
+
+Day 5 — UI Foundation
+
+Build:
+
+Sidebar
+
+Navbar
+
+Dashboard shell
+
+Breadcrumbs
+
+Theme toggle
+
+Loading screen
+
+Error page
+
+Empty state component
+
+
+Deliverable
+
+✅ Reusable UI foundation.
+
+
+---
+
+Day 6 — RBAC Foundation
+
+Create roles:
+
+Super Admin
+
+Organization Admin
+
+Property Owner
+
+Agent
+
+Customer
+
+
+Create:
+
+Permission middleware
+
+Role guard
+
+Route protection
+
+
+Deliverable
+
+✅ Authorization ready.
+
+
+---
+
+Day 7 — Review & Polish
+
+Tasks
+
+Fix bugs
+
+Refactor code
+
+Write documentation
+
+Commit to GitHub
+
+Prepare Sprint 2
+
+
+Deliverable
+
+✅ Sprint 1 complete.
+
+
+---
+
+Sprint 2 Preview
+
+You'll build the first real business module:
+
+User Profiles
+
+Organizations
+
+Company Profile
+
+Team Members
+
+Invitations
+
+Permissions
+
+Organization Dashboard
+
+
+
+---
+
+Git Strategy
+
+Use feature branches:
+
+main
+develop
+
+feature/auth
+
+feature/property
+
+feature/booking
+
+feature/payment
+
+Merge through pull requests, even if you're working alone. It keeps your history clean and makes reviewing changes easier.
+
+
+---
+
+Recommended Folder Structure
+
+smart-property/
+│
+├── app/
+├── components/
+├── features/
+│   ├── auth/
+│   ├── organizations/
+│   ├── properties/
+│   ├── bookings/
+│   ├── rentals/
+│   ├── sales/
+│   ├── payments/
+│   ├── wallets/
+│   ├── gis/
+│   ├── trust/
+│   ├── bim/
+│   ├── vendors/
+│   ├── investment/
+│   └── admin/
+│
+├── server/
+│   ├── services/
+│   ├── repositories/
+│   ├── validators/
+│   └── middleware/
+│
+├── prisma/
+├── public/
+├── docs/
+└── tests/
+
+What we'll build after Sprint 1
+
+Once the foundation is complete, we'll move into Sprint 2, where we'll create the production-ready authentication and organization system with:
+
+Clerk Organizations
+
+User onboarding
+
+Role & permission management
+
+Organization dashboard
+
+Invitation system
+
+Profile management
+
+
+After that, we'll begin implementing the Property module, turning the architecture you've designed into a working application. This progression keeps each sprint focused and builds on a stable foundation rather than introducing too many moving parts at once.
