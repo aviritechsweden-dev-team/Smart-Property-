@@ -1,0 +1,548 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 5 — COMMERCIAL & FINANCIAL ENGINE
+Bookings • Rentals • Sales • Wallet • Payments • Crypto
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+Enum LeaseStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  RENEWED
+}
+
+Enum SaleStatus {
+  OFFER_RECEIVED
+  NEGOTIATION
+  AGREEMENT
+  PAYMENT_PENDING
+  COMPLETED
+  CANCELLED
+}
+
+Enum WalletType {
+  USER
+  ORGANIZATION
+  AGENT
+  ESCROW
+  COMMISSION
+  INVESTOR
+}
+
+Enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+Enum PaymentMethod {
+  CARD
+  BANK_TRANSFER
+  WALLET
+  CRYPTO
+  USSD
+  QR
+}
+
+Enum CryptoCurrency {
+  BTC
+  ETH
+  USDT
+  USDC
+  BNB
+  POL
+}
+
+/* =====================================================
+BOOKINGS
+===================================================== */
+
+Table bookings {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  customer_id uuid
+
+  assigned_agent_id uuid
+
+  booking_reference varchar [unique]
+
+  booking_type varchar
+
+  viewing_date datetime
+
+  booking_fee decimal
+
+  status BookingStatus
+
+  notes text
+
+  created_at timestamp
+
+}
+
+Table booking_payments {
+
+  id uuid [pk]
+
+  booking_id uuid
+
+  payment_id uuid
+
+  amount decimal
+
+}
+
+Table booking_attendees {
+
+  id uuid [pk]
+
+  booking_id uuid
+
+  user_id uuid
+
+  attendee_type varchar
+
+}
+
+/* =====================================================
+LEASES
+===================================================== */
+
+Table leases {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  tenant_id uuid
+
+  landlord_id uuid
+
+  lease_number varchar
+
+  monthly_rent decimal
+
+  security_deposit decimal
+
+  service_charge decimal
+
+  start_date date
+
+  end_date date
+
+  status LeaseStatus
+
+}
+
+Table lease_documents {
+
+  id uuid [pk]
+
+  lease_id uuid
+
+  document_id uuid
+
+}
+
+Table rent_invoices {
+
+  id uuid [pk]
+
+  lease_id uuid
+
+  invoice_number varchar
+
+  due_date date
+
+  amount decimal
+
+  balance decimal
+
+  status varchar
+
+}
+
+Table rent_payments {
+
+  id uuid [pk]
+
+  invoice_id uuid
+
+  payment_id uuid
+
+  amount decimal
+
+}
+
+/* =====================================================
+PROPERTY SALES
+===================================================== */
+
+Table property_sales {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  buyer_id uuid
+
+  seller_id uuid
+
+  assigned_agent_id uuid
+
+  sale_price decimal
+
+  status SaleStatus
+
+  completion_date date
+
+}
+
+Table offers {
+
+  id uuid [pk]
+
+  sale_id uuid
+
+  offered_by uuid
+
+  amount decimal
+
+  message text
+
+  created_at timestamp
+
+}
+
+Table ownership_transfers {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  previous_owner uuid
+
+  new_owner uuid
+
+  transfer_date date
+
+  document_id uuid
+
+}
+
+/* =====================================================
+WALLETS
+===================================================== */
+
+Table wallets {
+
+  id uuid [pk]
+
+  user_id uuid
+
+  organization_id uuid
+
+  wallet_type WalletType
+
+  currency varchar
+
+  available_balance decimal
+
+  reserved_balance decimal
+
+  total_balance decimal
+
+}
+
+Table wallet_transactions {
+
+  id uuid [pk]
+
+  wallet_id uuid
+
+  payment_id uuid
+
+  transaction_type TransactionType
+
+  amount decimal
+
+  description text
+
+  created_at timestamp
+
+}
+
+/* =====================================================
+PAYMENTS
+===================================================== */
+
+Table payments {
+
+  id uuid [pk]
+
+  payer_id uuid
+
+  organization_id uuid
+
+  payment_reference varchar [unique]
+
+  payment_method PaymentMethod
+
+  amount decimal
+
+  currency varchar
+
+  gateway varchar
+
+  gateway_reference varchar
+
+  status PaymentStatus
+
+  paid_at timestamp
+
+}
+
+Table payment_items {
+
+  id uuid [pk]
+
+  payment_id uuid
+
+  payable_type varchar
+
+  payable_id uuid
+
+  amount decimal
+
+}
+
+/* =====================================================
+CRYPTO
+===================================================== */
+
+Table crypto_transactions {
+
+  id uuid [pk]
+
+  payment_id uuid
+
+  cryptocurrency CryptoCurrency
+
+  wallet_address varchar
+
+  transaction_hash varchar
+
+  network varchar
+
+  confirmations int
+
+  exchange_rate decimal
+
+}
+
+Table crypto_wallet_addresses {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  cryptocurrency CryptoCurrency
+
+  wallet_address varchar
+
+  label varchar
+
+}
+
+/* =====================================================
+COMMISSIONS
+===================================================== */
+
+Table commission_rules {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  transaction_type varchar
+
+  percentage decimal
+
+}
+
+Table commissions {
+
+  id uuid [pk]
+
+  payment_id uuid
+
+  property_id uuid
+
+  agent_id uuid
+
+  commission_rule_id uuid
+
+  amount decimal
+
+  paid boolean
+
+}
+
+Table commission_payouts {
+
+  id uuid [pk]
+
+  commission_id uuid
+
+  payment_reference varchar
+
+  payout_date timestamp
+
+}
+
+/* =====================================================
+ESCROW
+===================================================== */
+
+Table escrow_accounts {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  buyer_id uuid
+
+  seller_id uuid
+
+  wallet_id uuid
+
+  balance decimal
+
+  status varchar
+
+}
+
+Table escrow_transactions {
+
+  id uuid [pk]
+
+  escrow_account_id uuid
+
+  payment_id uuid
+
+  amount decimal
+
+  action varchar
+
+  transaction_date timestamp
+
+}
+
+/* =====================================================
+REFUNDS
+===================================================== */
+
+Table refunds {
+
+  id uuid [pk]
+
+  payment_id uuid
+
+  amount decimal
+
+  reason text
+
+  status varchar
+
+  refunded_at timestamp
+
+}
+
+/* =====================================================
+RELATIONSHIPS
+===================================================== */
+
+Ref: bookings.property_id > properties.id
+Ref: bookings.customer_id > users.id
+Ref: bookings.assigned_agent_id > users.id
+
+Ref: booking_payments.booking_id > bookings.id
+Ref: booking_payments.payment_id > payments.id
+
+Ref: booking_attendees.booking_id > bookings.id
+Ref: booking_attendees.user_id > users.id
+
+Ref: leases.property_id > properties.id
+Ref: leases.tenant_id > users.id
+Ref: leases.landlord_id > users.id
+
+Ref: lease_documents.lease_id > leases.id
+Ref: lease_documents.document_id > documents.id
+
+Ref: rent_invoices.lease_id > leases.id
+
+Ref: rent_payments.invoice_id > rent_invoices.id
+Ref: rent_payments.payment_id > payments.id
+
+Ref: property_sales.property_id > properties.id
+Ref: property_sales.buyer_id > users.id
+Ref: property_sales.seller_id > users.id
+Ref: property_sales.assigned_agent_id > users.id
+
+Ref: offers.sale_id > property_sales.id
+Ref: offers.offered_by > users.id
+
+Ref: ownership_transfers.property_id > properties.id
+Ref: ownership_transfers.previous_owner > users.id
+Ref: ownership_transfers.new_owner > users.id
+Ref: ownership_transfers.document_id > documents.id
+
+Ref: wallets.user_id > users.id
+Ref: wallets.organization_id > organizations.id
+
+Ref: wallet_transactions.wallet_id > wallets.id
+Ref: wallet_transactions.payment_id > payments.id
+
+Ref: payments.payer_id > users.id
+Ref: payments.organization_id > organizations.id
+
+Ref: payment_items.payment_id > payments.id
+
+Ref: crypto_transactions.payment_id > payments.id
+
+Ref: crypto_wallet_addresses.organization_id > organizations.id
+
+Ref: commission_rules.organization_id > organizations.id
+
+Ref: commissions.payment_id > payments.id
+Ref: commissions.property_id > properties.id
+Ref: commissions.agent_id > users.id
+Ref: commissions.commission_rule_id > commission_rules.id
+
+Ref: commission_payouts.commission_id > commissions.id
+
+Ref: escrow_accounts.property_id > properties.id
+Ref: escrow_accounts.buyer_id > users.id
+Ref: escrow_accounts.seller_id > users.id
+Ref: escrow_accounts.wallet_id > wallets.id
+
+Ref: escrow_transactions.escrow_account_id > escrow_accounts.id
+Ref: escrow_transactions.payment_id > payments.id
+
+Ref: refunds.payment_id > payments.id
