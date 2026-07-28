@@ -1,0 +1,524 @@
+ENTERPRISE DOMAIN MODEL (EDM)
+
+Smart Property
+
+Enterprise PropTech Ecosystem
+
+Version 1.0
+
+Prepared For:
+Aviritech
+
+---
+
+1. Purpose
+
+The Enterprise Domain Model (EDM) defines the core business domains, entities, relationships, and ownership boundaries for Smart Property.
+
+Each domain encapsulates a specific area of business responsibility and communicates with other domains through well-defined interfaces.
+
+---
+
+2. Domain Map
+
+The Smart Property ecosystem is composed of the following bounded contexts:
+
+1. Identity & Access
+2. Organization Management
+3. Property Management
+4. GIS & Survey
+5. Smart Trust™
+6. Blockchain Registry
+7. Document Management
+8. BIM Management
+9. Booking & Reservations
+10. Rental Management
+11. Property Sales
+12. Tokenized Investment
+13. Finance & Smart Wallet™
+14. Vendor Marketplace
+15. Estate Management
+16. Bills & Utilities
+17. Notifications
+18. Reporting & Analytics
+19. Workflow Engine
+20. Audit & Compliance
+
+---
+
+3. Domain Details
+
+Domain 1 — Identity & Access
+
+Purpose
+
+Manage authentication, authorization, users, roles, permissions, and identity.
+
+Primary Entities
+
+- User
+- Role
+- Permission
+- UserRole
+- Session
+- Device
+- APIKey (future)
+
+Relationships
+
+- One User can have many Roles.
+- One Role has many Permissions.
+- Clerk Authentication maps to a User profile using "clerkId".
+
+---
+
+Domain 2 — Organization Management
+
+Purpose
+
+Support companies and teams operating on the platform.
+
+Entities
+
+- Organization
+- Branch
+- Department
+- Team
+- StaffMember
+
+This enables agencies, estate developers, law firms, surveying firms, and vendor companies to operate under a single organization.
+
+---
+
+Domain 3 — Property Management
+
+Purpose
+
+Manage all real estate assets.
+
+Entities
+
+- Estate
+- Block
+- Property
+- PropertyUnit
+- PropertyCategory
+- PropertyType
+- Amenity
+- PropertyMedia
+- PropertyVideo
+- PropertyFeature
+
+Relationships
+
+- One Estate contains many Blocks.
+- One Block contains many Properties.
+- One Property can contain many Units.
+- One Property has many Media assets.
+- One Property is owned by one or more Owners (allowing co-ownership).
+
+---
+
+Domain 4 — GIS & Survey
+
+Purpose
+
+Capture and manage geographical information.
+
+Entities
+
+- Survey
+- SurveyPlan
+- PropertyBoundary
+- Coordinate
+- GeoLocation
+- Parcel
+- Landmark
+
+Capabilities
+
+- Polygon boundaries
+- GeoJSON
+- KML/KMZ
+- CSV import
+- GPS capture
+- Area calculation
+
+A Property is linked to one or more PropertyBoundary records representing its land parcel.
+
+---
+
+Domain 5 — Smart Trust™
+
+Purpose
+
+Provide a trusted property verification process.
+
+Entities
+
+- VerificationRequest
+- VerificationStage
+- Inspection
+- LegalReview
+- Valuation
+- TrustScore
+- TrustCertificate
+
+Workflow
+
+Property → Verification → Survey Check → Inspection → Valuation → Legal Review → Approval → Blockchain Registration → Trust Certificate.
+
+---
+
+Domain 6 — Blockchain Registry
+
+Purpose
+
+Provide tamper-evident proof of verified property records.
+
+Entities
+
+- BlockchainRecord
+- Transaction
+- DocumentHash
+- PropertyHash
+- CertificateHash
+- SmartContract
+
+Relationships
+
+- Each TrustCertificate references one BlockchainRecord.
+- BlockchainRecord stores hashes and metadata, while the original documents remain in secure storage.
+
+---
+
+Domain 7 — Document Management
+
+Purpose
+
+Store and manage all property-related documents.
+
+Entities
+
+- Document
+- DocumentType
+- DocumentVersion
+- DocumentApproval
+- DigitalSignature (future)
+
+Examples
+
+- Certificate of Occupancy
+- Governor's Consent
+- Survey Plan
+- Deed of Assignment
+- Building Approval
+- Receipts
+- Agreements
+
+Supports versioning, audit trails, and expiry reminders.
+
+---
+
+Domain 8 — BIM Management
+
+Purpose
+
+Manage Building Information Models.
+
+Entities
+
+- BIMModel
+- BIMVersion
+- BIMAnnotation
+- BIMViewerPreference
+
+Supported Formats
+
+- IFC
+- RVT
+- DWG
+- DXF
+- PDF
+
+Future
+
+- Digital Twin
+- Asset Management
+- Facility Management
+
+---
+
+Domain 9 — Booking & Reservations
+
+Purpose
+
+Manage inspection and shortlet bookings.
+
+Entities
+
+- Booking
+- BookingPayment
+- BookingSchedule
+- BookingStatus
+
+Relationships
+
+- Booking belongs to one Property.
+- Booking references the assigned Agent at the time of booking to preserve commission history.
+
+---
+
+Domain 10 — Rental Management
+
+Purpose
+
+Manage leases and tenancy.
+
+Entities
+
+- Lease
+- TenantOccupancy
+- RentSchedule
+- RentPayment
+- Renewal
+
+---
+
+Domain 11 — Property Sales
+
+Purpose
+
+Manage property purchase transactions.
+
+Entities
+
+- Sale
+- Offer
+- SaleAgreement
+- OwnershipTransfer
+
+---
+
+Domain 12 — Tokenized Investment
+
+Purpose
+
+Support fractional real estate investment.
+
+Entities
+
+- InvestmentProject
+- Token
+- TokenAllocation
+- InvestorPortfolio
+- OwnershipCertificate
+- DividendDistribution (future)
+
+---
+
+Domain 13 — Finance & Smart Wallet™
+
+Purpose
+
+Centralize financial operations.
+
+Entities
+
+- Wallet
+- WalletTransaction
+- Payment
+- Refund
+- Invoice
+- Commission
+- Payout
+
+Supported Payment Methods
+
+- Card
+- Bank Transfer
+- Cryptocurrency
+- Wallet Balance
+
+Supported Payment Types
+
+- Rent
+- Property Purchase
+- Booking Fee
+- Estate Bills
+- Vendor Payments
+- Token Purchase
+- Agent Commissions
+
+---
+
+Domain 14 — Vendor Marketplace
+
+Purpose
+
+Connect users with verified professionals.
+
+Entities
+
+- Vendor
+- VendorCompany
+- VendorService
+- ServiceCategory
+- ServiceRequest
+- JobAssignment
+- VendorReview
+
+---
+
+Domain 15 — Estate Management
+
+Purpose
+
+Manage estates and shared facilities.
+
+Entities
+
+- Estate
+- Facility
+- FacilityBooking
+- MaintenanceRequest
+- IncidentReport
+- VisitorLog (future)
+
+---
+
+Domain 16 — Bills & Utilities
+
+Purpose
+
+Manage recurring and one-off bills.
+
+Entities
+
+- BillCategory
+- Bill
+- UtilityProvider
+- BillPayment
+- MeterReading (future)
+
+Supported Bills
+
+- Estate Levy
+- Electricity
+- Water
+- Internet
+- Waste Disposal
+- Security
+- Maintenance Fee
+
+---
+
+Domain 17 — Notifications
+
+Purpose
+
+Deliver communications.
+
+Entities
+
+- Notification
+- EmailMessage
+- SMSMessage
+- PushNotification
+- NotificationTemplate
+
+---
+
+Domain 18 — Reporting & Analytics
+
+Purpose
+
+Provide operational insights.
+
+Entities
+
+- Dashboard
+- Report
+- KPI
+- ScheduledReport
+
+---
+
+Domain 19 — Workflow Engine
+
+Purpose
+
+Support configurable business processes.
+
+Entities
+
+- Workflow
+- WorkflowStep
+- Approval
+- Task
+- Queue
+
+Supports:
+
+- Trust Approval
+- Vendor Verification
+- Property Approval
+- Legal Review
+- Valuation Approval
+
+---
+
+Domain 20 — Audit & Compliance
+
+Purpose
+
+Provide traceability and compliance.
+
+Entities
+
+- AuditLog
+- SecurityEvent
+- Activity
+- ComplianceRecord
+
+All critical actions generate immutable audit events.
+
+---
+
+4. Core Relationships
+
+- A User may belong to one or more Organizations.
+- A Property belongs to an Estate (optional).
+- A Property has one or more Owners.
+- A Property has one assigned Agent at a time.
+- A Property has many Documents.
+- A Property has many Media assets.
+- A Property has one or more GIS Boundaries.
+- A Property may have one or more BIM Models.
+- A Property may have one active Trust Certificate.
+- A Trust Certificate references a Blockchain Record.
+- A Booking records the Agent assigned at booking time.
+- A Vendor provides one or more Services.
+- A Wallet belongs to one User.
+- A Payment may relate to a Booking, Bill, Sale, Lease, Vendor Service, or Token Purchase.
+- Every critical action generates an Audit Log entry.
+
+---
+
+5. Future Domain Extensions
+
+The architecture allows future support for:
+
+- Mortgage Management
+- Escrow Services
+- Insurance
+- Smart Contracts
+- IoT Devices
+- AI Property Valuation
+- Drone Inspection
+- Government Registry Integration
+- Open Banking
+- Carbon Credit Tracking
+- Facility IoT Monitoring
+- Mobile Applications
+- Multi-country Operations
