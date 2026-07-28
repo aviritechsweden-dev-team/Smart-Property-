@@ -1,0 +1,174 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 7 — VENDOR MARKETPLACE & ESTATE MANAGEMENT
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum VendorStatus {
+  PENDING
+  VERIFIED
+  SUSPENDED
+  REJECTED
+}
+
+Enum VendorType {
+  PLUMBER
+  ELECTRICIAN
+  CARPENTER
+  PAINTER
+  CLEANER
+  SECURITY
+  FACILITY_MANAGER
+  HVAC
+  INTERNET_PROVIDER
+  LAWYER
+  SURVEYOR
+  VALUER
+  ARCHITECT
+  ENGINEER
+  CONTRACTOR
+  OTHER
+}
+
+Enum ServiceRequestStatus {
+  PENDING
+  ACCEPTED
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+Enum WorkOrderStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CLOSED
+}
+
+Enum MaintenancePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+Enum BillStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+Enum VisitorStatus {
+  EXPECTED
+  CHECKED_IN
+  CHECKED_OUT
+  DENIED
+}
+
+/* =====================================================
+VENDORS
+===================================================== */
+
+Table vendors {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  user_id uuid
+
+  vendor_type VendorType
+
+  business_name varchar
+
+  registration_number varchar
+
+  tax_number varchar
+
+  years_of_experience int
+
+  status VendorStatus
+
+  average_rating decimal
+
+  completed_jobs int
+
+  verified_at timestamp
+
+}
+
+Table vendor_certifications {
+
+  id uuid [pk]
+
+  vendor_id uuid
+
+  certification_name varchar
+
+  issuing_body varchar
+
+  certificate_number varchar
+
+  issue_date date
+
+  expiry_date date
+
+}
+
+Table vendor_services {
+
+  id uuid [pk]
+
+  vendor_id uuid
+
+  service_name varchar
+
+  description text
+
+  base_price decimal
+
+  estimated_duration int
+
+  active boolean
+
+}
+
+Table vendor_availability {
+
+  id uuid [pk]
+
+  vendor_id uuid
+
+  day_of_week int
+
+  start_time time
+
+  end_time time
+
+}
+
+/* =====================================================
+SERVICE REQUESTS
+===================================================== */
+
+Table service_requests {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  requester_id uuid
+
+  vendor_id uuid
+
+  category
