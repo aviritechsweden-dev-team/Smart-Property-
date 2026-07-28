@@ -1,0 +1,33 @@
+Identity
+     │
+     ▼
+Organizations
+     │
+     ▼
+Properties ─────────────── GIS
+     │                     │
+     ├──────────────┐      │
+     ▼              ▼      ▼
+ Smart Trust      Documents  Surveys
+     │              │
+     ▼              ▼
+ Blockchain       BIM
+     │
+     ▼
+ Sales ─── Rentals ─── Bookings
+     │         │            │
+     └─────────┴────────────┘
+               │
+               ▼
+        Payments & Wallet
+               │
+      ┌────────┴─────────┐
+      ▼                  ▼
+ Estate Bills      Vendor Marketplace
+      │                  │
+      └────────┬─────────┘
+               ▼
+        Notifications
+               │
+               ▼
+          Audit & Reports
