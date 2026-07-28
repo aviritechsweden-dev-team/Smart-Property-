@@ -1,0 +1,461 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 8 — PLATFORM SERVICES & ENTERPRISE OPERATIONS
+Notifications • AI • Audit • API • Reporting • Search
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  PUSH
+  WHATSAPP
+}
+
+Enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+Enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  APPROVE
+  REJECT
+  VERIFY
+  EXPORT
+}
+
+Enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+Enum WebhookStatus {
+  ACTIVE
+  DISABLED
+}
+
+Enum IntegrationStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+Enum WorkflowStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+/* =====================================================
+NOTIFICATIONS
+===================================================== */
+
+Table notifications {
+
+  id uuid [pk]
+
+  recipient_id uuid
+
+  organization_id uuid
+
+  title varchar
+
+  message text
+
+  channel NotificationChannel
+
+  status NotificationStatus
+
+  action_url text
+
+  sent_at timestamp
+
+  read_at timestamp
+
+  created_at timestamp
+
+}
+
+Table notification_templates {
+
+  id uuid [pk]
+
+  name varchar
+
+  channel NotificationChannel
+
+  subject varchar
+
+  template_body text
+
+  active boolean
+
+}
+
+/* =====================================================
+MESSAGING LOGS
+===================================================== */
+
+Table email_logs {
+
+  id uuid [pk]
+
+  notification_id uuid
+
+  recipient_email varchar
+
+  provider varchar
+
+  message_id varchar
+
+  delivered_at timestamp
+
+}
+
+Table sms_logs {
+
+  id uuid [pk]
+
+  notification_id uuid
+
+  recipient_phone varchar
+
+  provider varchar
+
+  message_id varchar
+
+  delivered_at timestamp
+
+}
+
+Table push_notifications {
+
+  id uuid [pk]
+
+  notification_id uuid
+
+  device_token varchar
+
+  platform varchar
+
+}
+
+/* =====================================================
+AUDIT LOGS
+===================================================== */
+
+Table audit_logs {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  user_id uuid
+
+  action AuditAction
+
+  entity_type varchar
+
+  entity_id uuid
+
+  old_values text
+
+  new_values text
+
+  ip_address varchar
+
+  user_agent text
+
+  created_at timestamp
+
+}
+
+/* =====================================================
+REPORTING
+===================================================== */
+
+Table reports {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  report_name varchar
+
+  report_type varchar
+
+  generated_by uuid
+
+  generated_at timestamp
+
+  file_url text
+
+}
+
+Table dashboards {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  dashboard_name varchar
+
+  configuration json
+
+}
+
+/* =====================================================
+SEARCH
+===================================================== */
+
+Table search_indexes {
+
+  id uuid [pk]
+
+  entity_type varchar
+
+  entity_id uuid
+
+  searchable_text text
+
+  updated_at timestamp
+
+}
+
+Table saved_searches {
+
+  id uuid [pk]
+
+  user_id uuid
+
+  search_name varchar
+
+  filters json
+
+  alerts_enabled boolean
+
+}
+
+/* =====================================================
+AI SERVICES
+===================================================== */
+
+Table ai_models {
+
+  id uuid [pk]
+
+  model_name varchar
+
+  provider varchar
+
+  version varchar
+
+  active boolean
+
+}
+
+Table ai_requests {
+
+  id uuid [pk]
+
+  user_id uuid
+
+  model_id uuid
+
+  feature varchar
+
+  prompt text
+
+  response text
+
+  processing_time int
+
+  created_at timestamp
+
+}
+
+Table ai_property_recommendations {
+
+  id uuid [pk]
+
+  user_id uuid
+
+  property_id uuid
+
+  recommendation_score decimal
+
+  reason text
+
+  generated_at timestamp
+
+}
+
+/* =====================================================
+WORKFLOW ENGINE
+===================================================== */
+
+Table workflows {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  workflow_name varchar
+
+  description text
+
+  status WorkflowStatus
+
+}
+
+Table workflow_steps {
+
+  id uuid [pk]
+
+  workflow_id uuid
+
+  step_name varchar
+
+  step_order int
+
+  assigned_role varchar
+
+}
+
+Table workflow_instances {
+
+  id uuid [pk]
+
+  workflow_id uuid
+
+  entity_type varchar
+
+  entity_id uuid
+
+  current_step_id uuid
+
+  status WorkflowStatus
+
+}
+
+/* =====================================================
+API MANAGEMENT
+===================================================== */
+
+Table api_keys {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  key_name varchar
+
+  api_key varchar
+
+  status ApiKeyStatus
+
+  expires_at timestamp
+
+  created_by uuid
+
+}
+
+Table api_logs {
+
+  id uuid [pk]
+
+  api_key_id uuid
+
+  endpoint varchar
+
+  method varchar
+
+  response_code int
+
+  response_time int
+
+  requested_at timestamp
+
+}
+
+/* =====================================================
+WEBHOOKS
+===================================================== */
+
+Table webhooks {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  webhook_name varchar
+
+  endpoint_url text
+
+  secret varchar
+
+  status WebhookStatus
+
+}
+
+Table webhook_events {
+
+  id uuid [pk]
+
+  webhook_id uuid
+
+  event_name varchar
+
+  payload json
+
+  delivered boolean
+
+  delivered_at timestamp
+
+}
+
+/* =====================================================
+THIRD-PARTY INTEGRATIONS
+===================================================== */
+
+Table integrations {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  provider varchar
+
+  integration_type varchar
+
+  status IntegrationStatus
+
+  configuration json
+
+}
+
+Table integration_logs {
+
+  id uuid [pk]
+
+  integration_id uuid
+
+  request_payload json
+
+  response_payload json
+
+  status
