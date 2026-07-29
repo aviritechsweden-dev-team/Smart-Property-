@@ -1,0 +1,361 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 9 — MASTER DATA & ADMINISTRATION
+Global Configuration • Localization • Security
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum OrganizationStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+Enum CurrencyStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum TaxType {
+  VAT
+  STAMP_DUTY
+  WITHHOLDING_TAX
+  SERVICE_CHARGE
+  OTHER
+}
+
+Enum LanguageStatus {
+  ACTIVE
+  INACTIVE
+}
+
+/* =====================================================
+COUNTRIES
+===================================================== */
+
+Table countries {
+
+  id uuid [pk]
+
+  iso2 varchar
+
+  iso3 varchar
+
+  name varchar
+
+  phone_code varchar
+
+  currency_code varchar
+
+  active boolean
+
+}
+
+Table states {
+
+  id uuid [pk]
+
+  country_id uuid
+
+  name varchar
+
+  code varchar
+
+}
+
+Table lgas {
+
+  id uuid [pk]
+
+  state_id uuid
+
+  name varchar
+
+}
+
+Table cities {
+
+  id uuid [pk]
+
+  lga_id uuid
+
+  name varchar
+
+}
+
+/* =====================================================
+CURRENCIES
+===================================================== */
+
+Table currencies {
+
+  id uuid [pk]
+
+  code varchar
+
+  symbol varchar
+
+  name varchar
+
+  exchange_rate decimal
+
+  status CurrencyStatus
+
+}
+
+Table exchange_rate_history {
+
+  id uuid [pk]
+
+  currency_id uuid
+
+  exchange_rate decimal
+
+  effective_date timestamp
+
+}
+
+/* =====================================================
+LANGUAGES
+===================================================== */
+
+Table languages {
+
+  id uuid [pk]
+
+  code varchar
+
+  name varchar
+
+  status LanguageStatus
+
+}
+
+/* =====================================================
+TIME ZONES
+===================================================== */
+
+Table time_zones {
+
+  id uuid [pk]
+
+  timezone varchar
+
+  utc_offset varchar
+
+}
+
+/* =====================================================
+TAX CONFIGURATION
+===================================================== */
+
+Table taxes {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  tax_name varchar
+
+  tax_type TaxType
+
+  percentage decimal
+
+  active boolean
+
+}
+
+/* =====================================================
+BUSINESS RULES
+===================================================== */
+
+Table business_rules {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  rule_name varchar
+
+  rule_key varchar
+
+  rule_value text
+
+  active boolean
+
+}
+
+/* =====================================================
+SYSTEM CONFIGURATION
+===================================================== */
+
+Table platform_settings {
+
+  id uuid [pk]
+
+  setting_group varchar
+
+  setting_key varchar
+
+  setting_value text
+
+}
+
+Table organization_settings {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  setting_key varchar
+
+  setting_value text
+
+}
+
+/* =====================================================
+FILE STORAGE
+===================================================== */
+
+Table storage_providers {
+
+  id uuid [pk]
+
+  provider_name varchar
+
+  endpoint varchar
+
+  region varchar
+
+  active boolean
+
+}
+
+Table storage_buckets {
+
+  id uuid [pk]
+
+  provider_id uuid
+
+  bucket_name varchar
+
+  visibility varchar
+
+}
+
+/* =====================================================
+EMAIL PROVIDERS
+===================================================== */
+
+Table email_providers {
+
+  id uuid [pk]
+
+  provider_name varchar
+
+  api_endpoint varchar
+
+  active boolean
+
+}
+
+/* =====================================================
+SMS PROVIDERS
+===================================================== */
+
+Table sms_providers {
+
+  id uuid [pk]
+
+  provider_name varchar
+
+  api_endpoint varchar
+
+  active boolean
+
+}
+
+/* =====================================================
+PAYMENT GATEWAYS
+===================================================== */
+
+Table payment_gateways {
+
+  id uuid [pk]
+
+  gateway_name varchar
+
+  supported_currency varchar
+
+  active boolean
+
+}
+
+Table gateway_webhooks {
+
+  id uuid [pk]
+
+  gateway_id uuid
+
+  event_name varchar
+
+  endpoint_url text
+
+}
+
+Table gateway_events {
+
+  id uuid [pk]
+
+  gateway_id uuid
+
+  event_reference varchar
+
+  payload json
+
+  received_at timestamp
+
+}
+
+/* =====================================================
+BACKGROUND JOBS
+===================================================== */
+
+Table scheduled_jobs {
+
+  id uuid [pk]
+
+  job_name varchar
+
+  cron_expression varchar
+
+  active boolean
+
+}
+
+Table job_history {
+
+  id uuid [pk]
+
+  job_id uuid
+
+  started_at timestamp
+
+  completed_at timestamp
+
+  status varchar
+
+}
+
+/* =====================================================
+SYSTEM HEALTH
+===================================================== */
+
+Table health_checks {
+
+  id uuid [pk]
+
+  service

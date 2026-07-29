@@ -1,0 +1,488 @@
+/* =====================================================
+SMART PROPERTY ENTERPRISE DBML v2.0
+PART 3B — SMART TRUST™ & BLOCKCHAIN DOMAIN
+===================================================== */
+
+/* =====================================================
+ENUMS
+===================================================== */
+
+Enum VerificationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+Enum VerificationStageType {
+  DOCUMENT_REVIEW
+  SURVEY_VERIFICATION
+  PHYSICAL_INSPECTION
+  PROPERTY_VALUATION
+  LEGAL_REVIEW
+  ADMIN_APPROVAL
+  BLOCKCHAIN_REGISTRATION
+  CERTIFICATE_ISSUANCE
+}
+
+Enum StageStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  SKIPPED
+}
+
+Enum InspectionStatus {
+  SCHEDULED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+Enum ValuationMethod {
+  MARKET
+  COST
+  INCOME
+  COMPARATIVE
+}
+
+Enum LegalReviewStatus {
+  PENDING
+  CLEARED
+  QUERY
+  REJECTED
+}
+
+Enum TrustCertificateStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+Enum BlockchainNetwork {
+  ETHEREUM
+  POLYGON
+  BASE
+  BNB
+  PRIVATE
+}
+
+/* =====================================================
+VERIFICATION REQUEST
+===================================================== */
+
+Table verification_requests {
+
+  id uuid [pk]
+
+  organization_id uuid
+
+  property_id uuid
+
+  applicant_id uuid
+
+  verification_number varchar [unique]
+
+  status VerificationStatus
+
+  submitted_at timestamp
+
+  completed_at timestamp
+
+  notes text
+
+  created_at timestamp
+
+  updated_at timestamp
+
+}
+
+/* =====================================================
+VERIFICATION STAGES
+===================================================== */
+
+Table verification_stages {
+
+  id uuid [pk]
+
+  verification_request_id uuid
+
+  stage VerificationStageType
+
+  assigned_to uuid
+
+  status StageStatus
+
+  started_at timestamp
+
+  completed_at timestamp
+
+  remarks text
+
+}
+
+/* =====================================================
+DOCUMENT CHECKLIST
+===================================================== */
+
+Table verification_documents {
+
+  id uuid [pk]
+
+  verification_request_id uuid
+
+  document_id uuid
+
+  verified_by uuid
+
+  status varchar
+
+  remarks text
+
+  verified_at timestamp
+
+}
+
+/* =====================================================
+PROPERTY INSPECTION
+===================================================== */
+
+Table inspections {
+
+  id uuid [pk]
+
+  verification_request_id uuid
+
+  inspector_id uuid
+
+  inspection_status InspectionStatus
+
+  inspection_date datetime
+
+  weather varchar
+
+  occupancy varchar
+
+  accessibility varchar
+
+  utilities_available boolean
+
+  report text
+
+}
+
+Table inspection_media {
+
+  id uuid [pk]
+
+  inspection_id uuid
+
+  media_type varchar
+
+  file_url text
+
+  caption varchar
+
+}
+
+Table inspection_checklists {
+
+  id uuid [pk]
+
+  inspection_id uuid
+
+  item varchar
+
+  passed boolean
+
+  remarks text
+
+}
+
+/* =====================================================
+VALUATION
+===================================================== */
+
+Table valuations {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  verification_request_id uuid
+
+  valuer_id uuid
+
+  valuation_method ValuationMethod
+
+  land_value decimal
+
+  building_value decimal
+
+  market_value decimal
+
+  forced_sale_value decimal
+
+  replacement_cost decimal
+
+  valuation_date date
+
+  report_url text
+
+}
+
+/* =====================================================
+LEGAL REVIEW
+===================================================== */
+
+Table legal_reviews {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  verification_request_id uuid
+
+  legal_officer_id uuid
+
+  review_status LegalReviewStatus
+
+  ownership_verified boolean
+
+  encumbrance_found boolean
+
+  litigation_found boolean
+
+  government_verified boolean
+
+  remarks text
+
+  completed_at timestamp
+
+}
+
+/* =====================================================
+TRUST SCORE
+===================================================== */
+
+Table trust_scores {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  verification_request_id uuid
+
+  document_score decimal
+
+  survey_score decimal
+
+  legal_score decimal
+
+  valuation_score decimal
+
+  inspection_score decimal
+
+  blockchain_score decimal
+
+  total_score decimal
+
+  grade varchar
+
+  calculated_at timestamp
+
+}
+
+/* =====================================================
+SMART TRUST CERTIFICATE
+===================================================== */
+
+Table trust_certificates {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  verification_request_id uuid
+
+  certificate_number varchar [unique]
+
+  certificate_status TrustCertificateStatus
+
+  issue_date date
+
+  expiry_date date
+
+  qr_code text
+
+  blockchain_record_id uuid
+
+}
+
+/* =====================================================
+BLOCKCHAIN
+===================================================== */
+
+Table blockchain_records {
+
+  id uuid [pk]
+
+  property_id uuid
+
+  certificate_id uuid
+
+  network BlockchainNetwork
+
+  smart_contract_id uuid
+
+  transaction_hash varchar
+
+  block_number bigint
+
+  block_hash varchar
+
+  wallet_address varchar
+
+  explorer_url text
+
+  gas_fee decimal
+
+  minted_at timestamp
+
+}
+
+Table smart_contracts {
+
+  id uuid [pk]
+
+  network BlockchainNetwork
+
+  contract_name varchar
+
+  contract_address varchar
+
+  abi_version varchar
+
+  deployed_at timestamp
+
+}
+
+/* =====================================================
+DOCUMENT HASHES
+===================================================== */
+
+Table document_hashes {
+
+  id uuid [pk]
+
+  document_id uuid
+
+  algorithm varchar
+
+  hash_value text
+
+  blockchain_record_id uuid
+
+}
+
+Table certificate_hashes {
+
+  id uuid [pk]
+
+  certificate_id uuid
+
+  algorithm varchar
+
+  hash_value text
+
+}
+
+/* =====================================================
+VERIFICATION PORTAL
+===================================================== */
+
+Table certificate_verifications {
+
+  id uuid [pk]
+
+  certificate_id uuid
+
+  verified_by_ip varchar
+
+  user_agent text
+
+  verification_date timestamp
+
+  verification_result boolean
+
+}
+
+/* =====================================================
+REVOCATION HISTORY
+===================================================== */
+
+Table certificate_revocations {
+
+  id uuid [pk]
+
+  certificate_id uuid
+
+  revoked_by uuid
+
+  reason text
+
+  revoked_at timestamp
+
+}
+
+/* =====================================================
+RELATIONSHIPS
+===================================================== */
+
+Ref: verification_requests.organization_id > organizations.id
+Ref: verification_requests.property_id > properties.id
+Ref: verification_requests.applicant_id > users.id
+
+Ref: verification_stages.verification_request_id > verification_requests.id
+Ref: verification_stages.assigned_to > users.id
+
+Ref: verification_documents.verification_request_id > verification_requests.id
+Ref: verification_documents.document_id > documents.id
+Ref: verification_documents.verified_by > users.id
+
+Ref: inspections.verification_request_id > verification_requests.id
+Ref: inspections.inspector_id > users.id
+
+Ref: inspection_media.inspection_id > inspections.id
+Ref: inspection_checklists.inspection_id > inspections.id
+
+Ref: valuations.property_id > properties.id
+Ref: valuations.verification_request_id > verification_requests.id
+Ref: valuations.valuer_id > users.id
+
+Ref: legal_reviews.property_id > properties.id
+Ref: legal_reviews.verification_request_id > verification_requests.id
+Ref: legal_reviews.legal_officer_id > users.id
+
+Ref: trust_scores.property_id > properties.id
+Ref: trust_scores.verification_request_id > verification_requests.id
+
+Ref: trust_certificates.property_id > properties.id
+Ref: trust_certificates.verification_request_id > verification_requests.id
+
+Ref: blockchain_records.property_id > properties.id
+Ref: blockchain_records.certificate_id > trust_certificates.id
+Ref: blockchain_records.smart_contract_id > smart_contracts.id
+
+Ref: document_hashes.document_id > documents.id
+Ref: document_hashes.blockchain_record_id > blockchain_records.id
+
+Ref: certificate_hashes.certificate_id > trust_certificates.id
+
+Ref: certificate_verifications.certificate_id > trust_certificates.id
+
+Ref: certificate_revocations.certificate_id > trust_certificates.id
+Ref: certificate_revocations.revoked_by > users.id

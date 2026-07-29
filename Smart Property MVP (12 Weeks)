@@ -1,0 +1,454 @@
+Smart Property MVP (12 Weeks)
+
+Goal: Launch a production-ready platform for property listing, agent management, bookings, rentals, sales, and payments.
+
+
+---
+
+Week 1 — Project Foundation
+
+Backend
+
+Create Next.js 15 project
+
+Configure TypeScript
+
+Configure Prisma
+
+Connect MySQL
+
+Configure Clerk
+
+Environment variables
+
+
+Frontend
+
+Install Tailwind CSS
+
+Install shadcn/ui
+
+Create dashboard layout
+
+
+Deliverables
+
+Authentication working
+
+Database connected
+
+Base dashboard
+
+
+
+---
+
+Week 2 — User Management
+
+Features
+
+User registration
+
+Login
+
+Profile management
+
+Organizations
+
+Roles
+
+Permissions
+
+
+Roles
+
+Super Admin
+
+Organization Admin
+
+Property Owner
+
+Agent
+
+Customer
+
+
+Deliverables
+
+Complete authentication and RBAC
+
+
+
+---
+
+Week 3 — Property Management
+
+Features
+
+Estates
+
+Properties
+
+Property categories
+
+Amenities
+
+Image uploads
+
+Property documents
+
+
+Deliverables
+
+CRUD for properties
+
+
+
+---
+
+Week 4 — Property Discovery
+
+Features
+
+Property listing
+
+Property details
+
+Search
+
+Filters
+
+Saved properties
+
+Responsive UI
+
+
+Deliverables
+
+Public property catalogue
+
+
+
+---
+
+Week 5 — Agent Module
+
+Features
+
+Agent profiles
+
+Assign agents to properties
+
+Agent dashboard
+
+Commission configuration
+
+
+Deliverables
+
+Agent management
+
+
+
+---
+
+Week 6 — Booking System
+
+Features
+
+Book inspections
+
+Viewing calendar
+
+Booking approvals
+
+Booking history
+
+Booking fees
+
+
+Deliverables
+
+Property viewing workflow
+
+
+
+---
+
+Week 7 — Rentals
+
+Features
+
+Lease creation
+
+Tenant management
+
+Rent invoices
+
+Rent payments
+
+Lease renewals
+
+
+Deliverables
+
+Rental management
+
+
+
+---
+
+Week 8 — Property Sales
+
+Features
+
+Property offers
+
+Offer negotiation
+
+Sales workflow
+
+Ownership transfer records
+
+
+Deliverables
+
+Property sales module
+
+
+
+---
+
+Week 9 — Payments
+
+Features
+
+Wallet
+
+Paystack integration
+
+Flutterwave integration
+
+Payment history
+
+Receipts
+
+
+Deliverables
+
+Working payment system
+
+
+
+---
+
+Week 10 — Administration
+
+Features
+
+Admin dashboard
+
+User management
+
+Property approval
+
+Reports
+
+Activity logs
+
+
+Deliverables
+
+Complete administration portal
+
+
+
+---
+
+Week 11 — Notifications & Polish
+
+Features
+
+Email notifications
+
+In-app notifications
+
+SMS (optional)
+
+Loading states
+
+Error handling
+
+Empty states
+
+
+Deliverables
+
+Production-ready user experience
+
+
+
+---
+
+Week 12 — Testing & Deployment
+
+Tasks
+
+Fix bugs
+
+Performance optimization
+
+Security review
+
+End-to-end testing
+
+Deploy production environment
+
+User acceptance testing (UAT)
+
+
+Deliverables
+
+Smart Property MVP v1.0 live
+
+
+
+---
+
+MVP Features
+
+Authentication
+
+Clerk authentication
+
+Organization support
+
+Role-based access control
+
+
+Property Management
+
+Estates
+
+Properties
+
+Amenities
+
+Media
+
+Documents
+
+
+Agent Management
+
+Agent profiles
+
+Property assignment
+
+Commission setup
+
+
+Customer Portal
+
+Browse properties
+
+Search & filter
+
+Book viewings
+
+Save favorites
+
+
+Rentals
+
+Lease management
+
+Rent tracking
+
+Tenant records
+
+
+Sales
+
+Offers
+
+Sales workflow
+
+Ownership records
+
+
+Payments
+
+Wallet
+
+Paystack
+
+Flutterwave
+
+Receipts
+
+
+Administration
+
+Dashboard
+
+Reports
+
+User management
+
+Property approvals
+
+
+
+---
+
+Defer to Version 2
+
+These are valuable, but they shouldn't delay your MVP:
+
+Smart Trust™ verification
+
+Blockchain integration
+
+Property tokenization
+
+Crypto payments
+
+BIM model viewer
+
+Walkthrough video management
+
+GIS polygon drawing
+
+AI recommendations
+
+Digital Twin
+
+Vendor marketplace
+
+Estate billing
+
+Visitor management
+
+
+
+---
+
+Suggested Daily Schedule
+
+If you're working a normal job:
+
+Monday–Thursday: 2 hours each evening
+
+Friday: Review and bug fixes (1–2 hours)
+
+Saturday: 5–6 hours of focused development
+
+Sunday: Rest or documentation (optional)
+
+
+That gives you roughly 15–18 focused hours per week, which is enough to complete the MVP without constant late nights.
+
+Final recommendation
+
+Your CTO's stack choice—Next.js + Clerk + Prisma + MySQL—is well suited for this plan. Keep the MVP focused on the core business of listing, booking, renting, selling, and paying. Once that's stable and users are getting value, you can layer in Smart Trust™, blockchain, GIS, BIM, tokenization, and AI as version 2 features without destabilizing the core platform.

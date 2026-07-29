@@ -1,0 +1,537 @@
+Smart Property — Enterprise Database Model (DBML) v1.0
+
+Project SmartProperty {
+  database_type: "MySQL"
+  Note: '''
+  Smart Property Enterprise PropTech Platform
+  Version 1.0
+  '''
+}
+
+/* =====================================================
+   IDENTITY & ACCESS
+===================================================== */
+
+Table users {
+  id uuid [pk]
+  clerk_id varchar [unique]
+  email varchar [unique]
+  phone varchar
+  first_name varchar
+  last_name varchar
+  avatar_url text
+  status varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table roles {
+  id uuid [pk]
+  name varchar
+  description text
+}
+
+Table permissions {
+  id uuid [pk]
+  name varchar
+  module varchar
+}
+
+Table user_roles {
+  id uuid [pk]
+  user_id uuid
+  role_id uuid
+}
+
+/* =====================================================
+   ORGANIZATIONS
+===================================================== */
+
+Table organizations {
+  id uuid [pk]
+  name varchar
+  type varchar
+  logo text
+}
+
+Table organization_members {
+  id uuid [pk]
+  organization_id uuid
+  user_id uuid
+  designation varchar
+}
+
+/* =====================================================
+   ESTATES
+===================================================== */
+
+Table estates {
+  id uuid [pk]
+  name varchar
+  address text
+}
+
+Table estate_blocks {
+  id uuid [pk]
+  estate_id uuid
+  name varchar
+}
+
+/* =====================================================
+   PROPERTY
+===================================================== */
+
+Table properties {
+  id uuid [pk]
+  owner_id uuid
+  estate_id uuid
+  block_id uuid
+  title varchar
+  slug varchar
+  description text
+  property_type varchar
+  listing_type varchar
+  price decimal
+  status varchar
+  trust_status varchar
+  created_at timestamp
+}
+
+Table property_units {
+  id uuid [pk]
+  property_id uuid
+  unit_name varchar
+  bedrooms int
+  bathrooms int
+  floor varchar
+}
+
+Table property_agent_assignments {
+  id uuid [pk]
+  property_id uuid
+  agent_id uuid
+  assigned_by uuid
+  assigned_at timestamp
+  unassigned_at timestamp
+}
+
+Table property_media {
+  id uuid [pk]
+  property_id uuid
+  type varchar
+  url text
+  thumbnail text
+  caption varchar
+}
+
+Table property_videos {
+  id uuid [pk]
+  property_id uuid
+  title varchar
+  video_url text
+  duration int
+}
+
+/* =====================================================
+   GIS
+===================================================== */
+
+Table surveys {
+  id uuid [pk]
+  property_id uuid
+  survey_number varchar
+  surveyor_id uuid
+}
+
+Table property_boundaries {
+  id uuid [pk]
+  property_id uuid
+}
+
+Table boundary_coordinates {
+  id uuid [pk]
+  boundary_id uuid
+  latitude decimal
+  longitude decimal
+  sequence int
+}
+
+/* =====================================================
+   TRUST SYSTEM
+===================================================== */
+
+Table verification_requests {
+  id uuid [pk]
+  property_id uuid
+  applicant_id uuid
+  status varchar
+}
+
+Table inspections {
+  id uuid [pk]
+  verification_request_id uuid
+  inspector_id uuid
+  inspection_date datetime
+}
+
+Table valuations {
+  id uuid [pk]
+  property_id uuid
+  valuer_id uuid
+  market_value decimal
+}
+
+Table legal_reviews {
+  id uuid [pk]
+  property_id uuid
+  lawyer_id uuid
+  status varchar
+}
+
+Table trust_certificates {
+  id uuid [pk]
+  property_id uuid
+  certificate_number varchar
+  blockchain_record_id uuid
+}
+
+/* =====================================================
+   BLOCKCHAIN
+===================================================== */
+
+Table blockchain_records {
+  id uuid [pk]
+  property_id uuid
+  transaction_hash varchar
+  contract_address varchar
+  block_number varchar
+  network varchar
+}
+
+/* =====================================================
+   DOCUMENTS
+===================================================== */
+
+Table documents {
+  id uuid [pk]
+  property_id uuid
+  type varchar
+  url text
+  version int
+}
+
+Table document_versions {
+  id uuid [pk]
+  document_id uuid
+  version int
+  file_url text
+}
+
+/* =====================================================
+   BIM
+===================================================== */
+
+Table bim_models {
+  id uuid [pk]
+  property_id uuid
+  version varchar
+  format varchar
+  file_url text
+}
+
+Table bim_annotations {
+  id uuid [pk]
+  bim_model_id uuid
+  user_id uuid
+  comment text
+}
+
+/* =====================================================
+   BOOKINGS
+===================================================== */
+
+Table bookings {
+  id uuid [pk]
+  property_id uuid
+  customer_id uuid
+  agent_assignment_id uuid
+  booking_fee decimal
+  status varchar
+}
+
+/* =====================================================
+   RENTALS
+===================================================== */
+
+Table leases {
+  id uuid [pk]
+  property_id uuid
+  tenant_id uuid
+  rent decimal
+  start_date date
+  end_date date
+}
+
+/* =====================================================
+   SALES
+===================================================== */
+
+Table sales {
+  id uuid [pk]
+  property_id uuid
+  buyer_id uuid
+  sale_price decimal
+}
+
+/* =====================================================
+   TOKENIZATION
+===================================================== */
+
+Table investment_projects {
+  id uuid [pk]
+  property_id uuid
+  name varchar
+}
+
+Table property_tokens {
+  id uuid [pk]
+  project_id uuid
+  token_symbol varchar
+  total_supply bigint
+}
+
+Table investor_holdings {
+  id uuid [pk]
+  token_id uuid
+  investor_id uuid
+  quantity decimal
+}
+
+/* =====================================================
+   WALLET
+===================================================== */
+
+Table wallets {
+  id uuid [pk]
+  user_id uuid
+  balance decimal
+}
+
+Table wallet_transactions {
+  id uuid [pk]
+  wallet_id uuid
+  payment_id uuid
+  amount decimal
+  type varchar
+}
+
+/* =====================================================
+   PAYMENTS
+===================================================== */
+
+Table payments {
+  id uuid [pk]
+  payer_id uuid
+  amount decimal
+  currency varchar
+  payment_method varchar
+  reference varchar
+}
+
+/* =====================================================
+   VENDORS
+===================================================== */
+
+Table vendors {
+  id uuid [pk]
+  user_id uuid
+  business_name varchar
+}
+
+Table vendor_services {
+  id uuid [pk]
+  vendor_id uuid
+  category varchar
+  title varchar
+  price decimal
+}
+
+Table service_bookings {
+  id uuid [pk]
+  service_id uuid
+  customer_id uuid
+  property_id uuid
+}
+
+/* =====================================================
+   BILLS
+===================================================== */
+
+Table bills {
+  id uuid [pk]
+  property_id uuid
+  bill_type varchar
+  amount decimal
+}
+
+Table bill_payments {
+  id uuid [pk]
+  bill_id uuid
+  payment_id uuid
+}
+
+/* =====================================================
+   NOTIFICATIONS
+===================================================== */
+
+Table notifications {
+  id uuid [pk]
+  user_id uuid
+  title varchar
+  body text
+  read boolean
+}
+
+/* =====================================================
+   AUDIT
+===================================================== */
+
+Table audit_logs {
+  id uuid [pk]
+  user_id uuid
+  action varchar
+  entity varchar
+  entity_id uuid
+  created_at timestamp
+}
+
+
+
+Organization
+-------------
+id
+name
+slug
+type
+email
+phone
+registrationNumber
+logo
+status
+createdAt
+
+OrganizationMember
+------------------
+id
+organizationId
+userId
+role
+joinedAt
+
+OrganizationRole
+----------------
+id
+organizationId
+name
+
+OrganizationPermission
+----------------------
+id
+organizationRoleId
+permissionId
+
+
+PropertyOwner
+-------------
+id
+propertyId
+ownerId
+ownershipType
+ownershipPercentage
+startDate
+endDate
+
+PropertyAgentAssignment
+-----------------------
+id
+propertyId
+agentId
+assignedBy
+assignmentReason
+assignedAt
+releasedAt
+status
+/* =====================================================
+   RELATIONSHIPS
+===================================================== */
+
+Ref: user_roles.user_id > users.id
+Ref: user_roles.role_id > roles.id
+
+Ref: organization_members.user_id > users.id
+Ref: organization_members.organization_id > organizations.id
+
+Ref: estates.id < estate_blocks.estate_id
+
+Ref: properties.owner_id > users.id
+Ref: properties.estate_id > estates.id
+Ref: properties.block_id > estate_blocks.id
+
+Ref: property_units.property_id > properties.id
+Ref: property_media.property_id > properties.id
+Ref: property_videos.property_id > properties.id
+
+Ref: property_agent_assignments.property_id > properties.id
+Ref: property_agent_assignments.agent_id > users.id
+
+Ref: surveys.property_id > properties.id
+Ref: surveys.surveyor_id > users.id
+
+Ref: property_boundaries.property_id > properties.id
+Ref: boundary_coordinates.boundary_id > property_boundaries.id
+
+Ref: verification_requests.property_id > properties.id
+Ref: inspections.verification_request_id > verification_requests.id
+
+Ref: valuations.property_id > properties.id
+Ref: legal_reviews.property_id > properties.id
+
+Ref: trust_certificates.property_id > properties.id
+Ref: trust_certificates.blockchain_record_id > blockchain_records.id
+
+Ref: blockchain_records.property_id > properties.id
+
+Ref: documents.property_id > properties.id
+Ref: document_versions.document_id > documents.id
+
+Ref: bim_models.property_id > properties.id
+Ref: bim_annotations.bim_model_id > bim_models.id
+
+Ref: bookings.property_id > properties.id
+Ref: bookings.customer_id > users.id
+
+Ref: leases.property_id > properties.id
+Ref: leases.tenant_id > users.id
+
+Ref: sales.property_id > properties.id
+Ref: sales.buyer_id > users.id
+
+Ref: investment_projects.property_id > properties.id
+Ref: property_tokens.project_id > investment_projects.id
+Ref: investor_holdings.token_id > property_tokens.id
+Ref: investor_holdings.investor_id > users.id
+
+Ref: wallets.user_id > users.id
+Ref: wallet_transactions.wallet_id > wallets.id
+
+Ref: vendors.user_id > users.id
+Ref: vendor_services.vendor_id > vendors.id
+Ref: service_bookings.service_id > vendor_services.id
+Ref: service_bookings.customer_id > users.id
+Ref: service_bookings.property_id > properties.id
+
+Ref: bill_payments.bill_id > bills.id
+Ref: bill_payments.payment_id > payments.id
+
+Ref: notifications.user_id > users.id
+Ref: audit_logs.user_id > users.id
