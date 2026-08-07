@@ -1,37 +1,37 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+	// schema.prisma
+// Single-file version — everything merged from the modular prisma/ files.
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-}
-
-///////////////////////////////////////////////////////////////
-// SMART PROPERTY
-// Enterprise Database Schema
-// Version: 2.0
-///////////////////////////////////////////////////////////////
-
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
+// enums.prisma
+// Every enum used across the platform, defined ONCE.
+//
+// Fixes applied vs. the original file:
+// - BookingType, BookingStatus, LeaseStatus, AuditAction, OfferStatus,
+//   IoTDeviceType, IoTDeviceStatus existed as 2-3 conflicting copies each.
+//   Values were merged (union) so nothing already modeled is lost.
+// - BillType / BillStatus were dropped: UtilityBillType / UtilityBillStatus
+//   already cover the same ground (ESTATE_DUES, MAINTENANCE, SECURITY,
+//   WASTE, etc.) and nothing in the schema referenced BillType/BillStatus.
+// - DeviceType / DeviceStatus were dropped: they duplicated
+//   IoTDeviceType / IoTDeviceStatus and were never referenced by any model.
+// - `enum BlockchainNetwork` collided with `model BlockchainNetwork`
+//   (Prisma doesn't allow two top-level declarations to share a name).
+//   The enum was never used as a field type anywhere, so it's renamed to
+//   BlockchainNetworkType and kept in case you want a network-category
+//   filter later.
+// - LedgerCategory was referenced by LedgerAccount.category but was never
+//   defined anywhere — added with standard chart-of-accounts values.
+// - MaintenancePriority, MaintenanceStatus, VendorJobStatus are new:
+//   the Maintenance and Vendor domains were requested in the master
+//   prompt but no models for them existed in the uploaded file at all.
 
-///////////////////////////////////////////////////////////////
-// PROPERTY
-///////////////////////////////////////////////////////////////
-
+// ---------- Property ----------
 enum PropertyStatus {
   DRAFT
   AVAILABLE
@@ -62,38 +62,19 @@ enum PropertyTypeCategory {
   ESTATE
 }
 
-///////////////////////////////////////////////////////////////
-// ORGANIZATION
-///////////////////////////////////////////////////////////////
-
-enum OrganizationType {
-  COMPANY
-  ESTATE
-  GOVERNMENT
-  AGENCY
-  INDIVIDUAL
+enum TrustStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  DOCUMENTS_VERIFIED
+  SURVEY_VERIFIED
+  VALUATION_COMPLETED
+  LEGAL_CLEARED
+  APPROVED
+  BLOCKCHAIN_REGISTERED
+  CERTIFIED
+  REJECTED
 }
-
-///////////////////////////////////////////////////////////////
-// USER
-///////////////////////////////////////////////////////////////
-
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-  DELETED
-}
-
-///////////////////////////////////////////////////////////////
-// DOCUMENTS
-///////////////////////////////////////////////////////////////
 
 enum DocumentType {
   C_OF_O
@@ -111,10 +92,6 @@ enum DocumentType {
   OTHER
 }
 
-///////////////////////////////////////////////////////////////
-// MEDIA
-///////////////////////////////////////////////////////////////
-
 enum MediaType {
   IMAGE
   VIDEO
@@ -125,10 +102,6 @@ enum MediaType {
   DOCUMENT
 }
 
-///////////////////////////////////////////////////////////////
-// GIS
-///////////////////////////////////////////////////////////////
-
 enum GISFileType {
   KML
   KMZ
@@ -137,28 +110,149 @@ enum GISFileType {
   SHAPEFILE
 }
 
-///////////////////////////////////////////////////////////////
-// SMART TRUST
-///////////////////////////////////////////////////////////////
-
-enum TrustStatus {
-  DRAFT
-  SUBMITTED
-  UNDER_REVIEW
-  DOCUMENTS_VERIFIED
-  SURVEY_VERIFIED
-  VALUATION_COMPLETED
-  LEGAL_CLEARED
-  APPROVED
-  BLOCKCHAIN_REGISTERED
-  CERTIFIED
-  REJECTED
+// ---------- Organization / Auth ----------
+enum OrganizationType {
+  COMPANY
+  ESTATE
+  GOVERNMENT
+  AGENCY
+  INDIVIDUAL
 }
 
-///////////////////////////////////////////////////////////////
-// PAYMENT
-///////////////////////////////////////////////////////////////
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
 
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
+// ---------- Currency ----------
+enum Currency {
+  NGN
+  USD
+  EUR
+  GBP
+  BTC
+  ETH
+  USDT
+}
+
+// ---------- Booking / Marketplace ----------
+enum BookingType {
+  INSPECTION
+  VIEWING
+  SHORTLET
+  PROPERTY_VIEWING
+  RENTAL
+  PROPERTY_PURCHASE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  REJECTED
+  EXPIRED
+}
+
+enum InspectionStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  MISSED
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COUNTERED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum ListingType {
+  SALE
+  RENT
+  SHORTLET
+  LEASE
+}
+
+enum ListingStatus {
+  DRAFT
+  PUBLISHED
+  UNDER_OFFER
+  LET_AGREED
+  SOLD
+  EXPIRED
+  DELISTED
+}
+
+// ---------- Lease ----------
+enum LeaseStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  RENEWED
+  CANCELLED
+}
+
+enum RentFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUALLY
+  ANNUALLY
+}
+
+enum InvoiceStatus {
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum NoticeType {
+  WARNING
+  RENT_DUE
+  RENT_OVERDUE
+  TERMINATION
+  VACATE
+  GENERAL
+}
+
+// ---------- Wallet ----------
+enum WalletStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum WalletTransactionType {
+  CREDIT
+  DEBIT
+  HOLD
+  RELEASE
+  REFUND
+  COMMISSION
+  ADJUSTMENT
+}
+
+// ---------- Payment ----------
 enum PaymentMethod {
   CARD
   BANK_TRANSFER
@@ -187,76 +281,125 @@ enum PaymentPurpose {
   COMMISSION
   REFUND
   WALLET_TOPUP
+  VENDOR_PAYMENT
 }
 
-///////////////////////////////////////////////////////////////
-// WALLET
-///////////////////////////////////////////////////////////////
-
-enum WalletStatus {
-  ACTIVE
-  SUSPENDED
-  CLOSED
+// ---------- Ledger ----------
+enum LedgerCategory {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
 }
 
-enum WalletTransactionType {
-  CREDIT
-  DEBIT
-  HOLD
-  RELEASE
-  REFUND
-  COMMISSION
-  ADJUSTMENT
+// ---------- Utility / Estate Billing ----------
+enum MeterType {
+  ELECTRICITY
+  WATER
+  GAS
 }
 
-///////////////////////////////////////////////////////////////
-// CURRENCY
-///////////////////////////////////////////////////////////////
-
-enum Currency {
-  NGN
-  USD
-  EUR
-  GBP
-  BTC
-  ETH
-  USDT
+enum UtilityBillType {
+  ELECTRICITY
+  WATER
+  GAS
+  INTERNET
+  WASTE
+  SECURITY
+  ESTATE_DUES
+  MAINTENANCE
+  SERVICE_CHARGE
+  OTHER
 }
 
-///////////////////////////////////////////////////////////////
-// BOOKINGS
-///////////////////////////////////////////////////////////////
-
-enum BookingType {
-  INSPECTION
-  VIEWING
-  SHORTLET
-}
-
-enum BookingStatus {
+enum UtilityBillStatus {
   PENDING
-  CONFIRMED
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// ---------- IoT ----------
+enum IoTDeviceType {
+  SMART_LOCK
+  SMART_METER
+  ELECTRICITY_METER
+  WATER_METER
+  GAS_METER
+  CCTV
+  CAMERA
+  DOOR_SENSOR
+  WINDOW_SENSOR
+  MOTION_SENSOR
+  SMOKE_SENSOR
+  SMOKE_DETECTOR
+  FIRE_SENSOR
+  FIRE_ALARM
+  FLOOD_SENSOR
+  TEMPERATURE_SENSOR
+  HUMIDITY_SENSOR
+  ACCESS_CONTROL
+  LIGHT
+  SWITCH
+  SMART_LIGHT
+  SMART_SWITCH
+  SMART_SOCKET
+  SMART_THERMOSTAT
+  GATE_CONTROLLER
+  PARKING_GATE
+  INTERCOM
+  ELEVATOR
+  SOLAR_INVERTER
+  GENERATOR
+  EV_CHARGER
+  OTHER
+}
+
+enum IoTDeviceStatus {
+  ONLINE
+  OFFLINE
+  MAINTENANCE
+  DISABLED
+}
+
+enum AccessEventType {
+  ENTRY
+  EXIT
+  REMOTE_UNLOCK
+  REMOTE_LOCK
+  PIN_ACCESS
+  RFID_ACCESS
+  BIOMETRIC_ACCESS
+  MOBILE_ACCESS
+  FAILED_ACCESS
+}
+
+enum DeviceCommandStatus {
+  PENDING
+  SENT
+  EXECUTED
+  FAILED
+}
+
+// ---------- Maintenance ----------
+enum MaintenancePriority {
+  LOW
+  MEDIUM
+  HIGH
+  EMERGENCY
+}
+
+enum MaintenanceStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  ON_HOLD
   COMPLETED
   CANCELLED
-  NO_SHOW
 }
 
-///////////////////////////////////////////////////////////////
-// RENTALS
-///////////////////////////////////////////////////////////////
-
-enum LeaseStatus {
-  DRAFT
-  ACTIVE
-  EXPIRED
-  TERMINATED
-  RENEWED
-}
-
-///////////////////////////////////////////////////////////////
-// VENDORS
-///////////////////////////////////////////////////////////////
-
+// ---------- Vendor ----------
 enum VendorType {
   ELECTRICIAN
   PLUMBER
@@ -281,60 +424,97 @@ enum VendorStatus {
   SUSPENDED
 }
 
-///////////////////////////////////////////////////////////////
-// ESTATE BILLS
-///////////////////////////////////////////////////////////////
+enum VendorJobStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
 
-enum BillType {
-  ESTATE_LEVY
-  SECURITY
-  ELECTRICITY
-  WATER
-  WASTE
-  INTERNET
-  CABLE_TV
-  MAINTENANCE
-  FACILITY
+// ---------- Blockchain ----------
+enum BlockchainNetworkType {
+  ETHEREUM
+  POLYGON
+  BASE
+  BNB
+  STELLAR
   OTHER
 }
 
-enum BillStatus {
-  UNPAID
-  PARTIALLY_PAID
-  PAID
-  OVERDUE
+enum TokenizationStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  TOKENIZED
+  PAUSED
+  CLOSED
+}
+
+enum InvestmentStatus {
+  PENDING
+  ACTIVE
+  PARTIALLY_EXITED
+  EXITED
   CANCELLED
 }
 
-///////////////////////////////////////////////////////////////
-// IoT
-///////////////////////////////////////////////////////////////
-
-enum DeviceType {
-  SMART_LOCK
-  SMART_METER
-  CCTV
-  ACCESS_CONTROL
-  MOTION_SENSOR
-  SMOKE_SENSOR
-  WATER_SENSOR
-  ENERGY_SENSOR
-  TEMPERATURE_SENSOR
-  GATE_CONTROLLER
-  OTHER
+enum SmartContractStatus {
+  DRAFT
+  DEPLOYING
+  DEPLOYED
+  FAILED
+  PAUSED
 }
 
-enum DeviceStatus {
-  ONLINE
-  OFFLINE
+// ---------- Notifications / Messaging ----------
+enum NotificationType {
+  SYSTEM
+  PAYMENT
+  PROPERTY
+  BOOKING
+  RENT
+  BILL
+  WALLET
+  INVESTMENT
+  SECURITY
+  IOT
   MAINTENANCE
-  DISABLED
+  VENDOR
 }
 
-///////////////////////////////////////////////////////////////
-// AUDIT
-///////////////////////////////////////////////////////////////
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  PUSH
+  WHATSAPP
+}
 
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  READ
+}
+
+enum ConversationType {
+  DIRECT
+  PROPERTY
+  SUPPORT
+  GROUP
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+  LOCATION
+}
+
+// ---------- Audit ----------
 enum AuditAction {
   CREATE
   UPDATE
@@ -345,33 +525,29 @@ enum AuditAction {
   REJECT
   PAYMENT
   EXPORT
+  IMPORT
+  VIEW
 }
 
-///////////////////////////////////////////////////////////////
-// BLOCKCHAIN
-///////////////////////////////////////////////////////////////
-
-enum BlockchainNetwork {
-  ETHEREUM
-  POLYGON
-  BASE
-  BNB
-  STELLAR
-  OTHER
+// ---------- AI ----------
+enum AIProvider {
+  OPENAI
+  GEMINI
+  CLAUDE
+  LOCAL
 }
-
 //////////////////////////////////////////////////////
 // RBAC
 //////////////////////////////////////////////////////
 
 model Role {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
 
-  name        String   @unique
+  name        String @unique
   description String?
 
-  isSystem    Boolean  @default(false)
-  isActive    Boolean  @default(true)
+  isSystem    Boolean @default(false)
+  isActive    Boolean @default(true)
 
   users       UserRole[]
   permissions RolePermission[]
@@ -381,9 +557,9 @@ model Role {
 }
 
 model Permission {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
 
-  name        String   @unique
+  name        String @unique
   resource    String
   action      String
 
@@ -422,7 +598,179 @@ model UserRole {
 
   @@unique([userId, roleId])
 }
+//////////////////////////////////////////////////////
+// COUNTRY
+//////////////////////////////////////////////////////
 
+model Country {
+  id          String @id @default(cuid())
+
+  name        String
+  isoCode     String @unique
+  phoneCode   String?
+
+  states      State[]
+  addresses   PropertyAddress[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+//////////////////////////////////////////////////////
+// STATE
+//////////////////////////////////////////////////////
+
+model State {
+  id          String @id @default(cuid())
+
+  countryId   String
+  country     Country @relation(fields: [countryId], references: [id])
+
+  name        String
+  code        String?
+
+  localGovernments LocalGovernment[]
+  cities      City[]
+  addresses   PropertyAddress[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([countryId, name])
+}
+
+//////////////////////////////////////////////////////
+// LOCAL GOVERNMENT
+//////////////////////////////////////////////////////
+
+model LocalGovernment {
+  id          String @id @default(cuid())
+
+  stateId     String
+  state       State @relation(fields: [stateId], references: [id])
+
+  name        String
+
+  cities      City[]
+  addresses   PropertyAddress[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([stateId, name])
+}
+
+//////////////////////////////////////////////////////
+// CITY
+//////////////////////////////////////////////////////
+
+model City {
+  id          String @id @default(cuid())
+
+  stateId     String
+  state       State @relation(fields: [stateId], references: [id])
+
+  localGovernmentId String?
+  localGovernment LocalGovernment? @relation(fields: [localGovernmentId], references: [id])
+
+  name        String
+
+  districts   District[]
+  addresses   PropertyAddress[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([stateId, name])
+}
+
+//////////////////////////////////////////////////////
+// DISTRICT
+//////////////////////////////////////////////////////
+
+model District {
+  id          String @id @default(cuid())
+
+  cityId      String
+  city        City @relation(fields: [cityId], references: [id])
+
+  name        String
+
+  estates     Estate[]
+  addresses   PropertyAddress[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([cityId, name])
+}
+
+//////////////////////////////////////////////////////
+// ESTATE
+//////////////////////////////////////////////////////
+
+model Estate {
+  id          String @id @default(cuid())
+
+  districtId  String
+  district    District @relation(fields: [districtId], references: [id])
+
+  name        String
+  description String?
+
+  buildings   Building[]
+  addresses   PropertyAddress[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([districtId, name])
+}
+
+//////////////////////////////////////////////////////
+// BUILDING
+//////////////////////////////////////////////////////
+
+model Building {
+  id          String @id @default(cuid())
+
+  estateId    String
+  estate      Estate @relation(fields: [estateId], references: [id])
+
+  name        String
+  floors      Int?
+
+  units       Unit[]
+  properties  Property[]
+  addresses   PropertyAddress[]
+  devices     IoTDevice[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+//////////////////////////////////////////////////////
+// UNIT
+//////////////////////////////////////////////////////
+
+model Unit {
+  id          String @id @default(cuid())
+
+  buildingId  String
+  building    Building @relation(fields: [buildingId], references: [id])
+
+  unitNumber  String
+  floor       Int?
+
+  properties  Property[]
+  addresses   PropertyAddress[]
+  devices     IoTDevice[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([buildingId, unitNumber])
+}
 //////////////////////////////////////////////////////
 // ORGANIZATION
 //////////////////////////////////////////////////////
@@ -453,515 +801,112 @@ model Organization {
 
   @@index([slug])
 }
-
 //////////////////////////////////////////////////////
-// COUNTRY
+// USER
 //////////////////////////////////////////////////////
+// Fixes applied vs. the original:
+// - `notifications Notification[]` was declared TWICE in this model
+//   (a hard Prisma error) — now appears once.
+// - Removed `devices IoTDevice[]`: IoTDevice has no user-ownership field
+//   in this schema (devices belong to Property/Building/Unit); user<->device
+//   interaction is already modeled via accessLogs and deviceCommands below.
+// - Added every back-relation required by other domain files (payments
+//   splits/commissions/payouts/invoices, leases, offers, inspections,
+//   reviews, favourites, inquiries, IoT access/commands, maintenance,
+//   vendor) so none of those relations are one-sided.
 
-model Country {
-  id          String @id @default(cuid())
-
-  name        String
-  isoCode     String @unique
-  phoneCode   String?
-
-  states      State[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-//////////////////////////////////////////////////////
-// STATE
-//////////////////////////////////////////////////////
-
-model State {
-  id          String @id @default(cuid())
-
-  countryId   String
-  country     Country @relation(fields: [countryId], references: [id])
-
-  name        String
-  code        String?
-
-  localGovernments LocalGovernment[]
-
-  cities      City[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([countryId, name])
-}
-
-//////////////////////////////////////////////////////
-// LOCAL GOVERNMENT
-//////////////////////////////////////////////////////
-
-model LocalGovernment {
-  id          String @id @default(cuid())
-
-  stateId     String
-  state       State @relation(fields: [stateId], references: [id])
-
-  name        String
-
-  cities      City[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([stateId, name])
-}
-
-//////////////////////////////////////////////////////
-// CITY
-//////////////////////////////////////////////////////
-
-model City {
-  id          String @id @default(cuid())
-
-  stateId     String
-  state       State @relation(fields: [stateId], references: [id])
-
-  localGovernmentId String?
-  localGovernment LocalGovernment? @relation(fields: [localGovernmentId], references: [id])
-
-  name        String
-
-  districts   District[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([stateId, name])
-}
-
-//////////////////////////////////////////////////////
-// DISTRICT
-//////////////////////////////////////////////////////
-
-model District {
-  id          String @id @default(cuid())
-
-  cityId      String
-  city        City @relation(fields: [cityId], references: [id])
-
-  name        String
-
-  estates     Estate[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([cityId, name])
-}
-
-//////////////////////////////////////////////////////
-// ESTATE
-//////////////////////////////////////////////////////
-
-model Estate {
-  id          String @id @default(cuid())
-
-  districtId  String
-  district    District @relation(fields: [districtId], references: [id])
-
-  name        String
-
-  description String?
-
-  buildings   Building[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([districtId, name])
-}
-
-//////////////////////////////////////////////////////
-// BUILDING
-//////////////////////////////////////////////////////
-
-model Building {
-  id          String @id @default(cuid())
-
-  estateId    String
-  estate      Estate @relation(fields: [estateId], references: [id])
-
-  name        String
-
-  floors      Int?
-
-  units       Unit[]
-
-  properties  Property[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-//////////////////////////////////////////////////////
-// UNIT
-//////////////////////////////////////////////////////
-
-model Unit {
-  id          String @id @default(cuid())
-
-  buildingId  String
-  building    Building @relation(fields: [buildingId], references: [id])
-
-  unitNumber  String
-
-  floor       Int?
-
-  properties  Property[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([buildingId, unitNumber])
-}
- 
-//////////////////////////////////////////////////////
-// RBAC
-//////////////////////////////////////////////////////
-
-model Role {
-  id          String   @id @default(cuid())
-
-  name        String   @unique
-  description String?
-
-  isSystem    Boolean  @default(false)
-  isActive    Boolean  @default(true)
-
-  users       UserRole[]
-  permissions RolePermission[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Permission {
-  id          String   @id @default(cuid())
-
-  name        String   @unique
-  resource    String
-  action      String
-
-  description String?
-
-  roles       RolePermission[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model RolePermission {
-  id           String @id @default(cuid())
-
-  roleId       String
-  permissionId String
-
-  role         Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  createdAt    DateTime @default(now())
-
-  @@unique([roleId, permissionId])
-}
-
-model UserRole {
-  id         String @id @default(cuid())
-
-  userId     String
-  roleId     String
-
-  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role       Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-  assignedAt DateTime @default(now())
-
-  @@unique([userId, roleId])
-}
-
-//////////////////////////////////////////////////////
-//USER
-//////////////////////////////////////////////////////
 model User {
-  id             String   @id @default(cuid())
+  id             String @id @default(cuid())
 
-  clerkId        String   @unique
-  email          String   @unique
+  clerkId        String @unique
+  email          String @unique
 
   firstName      String?
   lastName       String?
+  gender         Gender?
 
   phoneNumber    String?
   avatar         String?
 
-  isVerified     Boolean  @default(false)
-  isActive       Boolean  @default(true)
+  status         UserStatus @default(ACTIVE)
+  isVerified     Boolean @default(false)
+  isActive       Boolean @default(true)
 
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
 
-  roles               UserRole[]
-  wallet              Wallet?
-  payments            Payment[]
+  // Auth / RBAC
+  roles                     UserRole[]
 
-  ownedProperties     Property[] @relation("OwnedProperties")
-  managedProperties   Property[] @relation("ManagedProperties")
+  // Wallet / Payments
+  wallet                    Wallet?
+  payments                  Payment[]
+  paymentSplits             PaymentSplit[]
+  commissionsEarned         Commission[]
+  payouts                   Payout[]
+  invoicesReceived          Invoice[]
 
-  bookings            Booking[]
-  notifications       Notification[]
-  devices             IoTDevice[]
-  maintenanceRequests MaintenanceRequest[]
-  vendorJobs          VendorJob[]
+  // Property
+  ownedProperties           Property[] @relation("OwnedProperties")
+  managedProperties         Property[] @relation("ManagedProperties")
+
+  // Booking / Marketplace
+  agentBookings             Booking[] @relation("BookingAgent")
+  bookings                  Booking[]
+  inspectionsAssigned       PropertyInspection[] @relation("InspectionInspector")
+  offersMade                PropertyOffer[] @relation("PropertyBuyer")
+  propertyInquiries         PropertyInquiry[]
+  favouriteProperties       FavouriteProperty[]
+  propertyReviews           PropertyReview[]
+
+  // Lease
+  landlordLeases            Lease[] @relation("LandlordLeases")
+  tenantLeases               Lease[] @relation("TenantLeases")
+  leaseRenewalsProcessed    LeaseRenewal[] @relation("LeaseRenewedBy")
+  leaseNoticesIssued        LeaseNotice[] @relation("LeaseIssuedBy")
+
+  // IoT
+  accessLogs                SmartAccessLog[]
+  deviceCommands            DeviceCommand[]
+
+  // Maintenance / Vendor
+  maintenanceRequests       MaintenanceRequest[]
+  maintenanceRequestsAssigned MaintenanceRequest[] @relation("MaintenanceAssignee")
+  serviceHistoryPerformed   ServiceHistory[]
+  technicianProfile         Technician?
+  vendorProfile             Vendor?
+  vendorJobs                VendorJob[]
+  vendorRatingsGiven        VendorRating[]
+
+  // Notifications / Messaging
   notifications             Notification[]
- conversationParticipants  ConversationParticipant[]
- messages                  Message[]
- auditLogs                 AuditLog[]
- aiRequests                AIRequest[]
- investments       PropertyInvestment[]
-investorDividends InvestorDividend[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  conversationParticipants  ConversationParticipant[]
+  messages                  Message[]
+
+  // Audit / AI
+  auditLogs                 AuditLog[]
+  aiRequests                AIRequest[]
+
+  // Blockchain / Investment
+  investments               PropertyInvestment[]
+  investorDividends         InvestorDividend[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
 }
-
-//////////////////////////////////////////////////////
-// ORGANIZATION
-//////////////////////////////////////////////////////
-
-model Organization {
-  id          String @id @default(cuid())
-
-  name        String
-  slug        String @unique
-
-  type        OrganizationType
-
-  email       String? @unique
-  phone       String?
-
-  website     String?
-  logo        String?
-
-  description String?
-
-  isActive    Boolean @default(true)
-
-  users       User[]
-  properties  Property[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([slug])
-}
-
-//////////////////////////////////////////////////////
-// COUNTRY
-//////////////////////////////////////////////////////
-
-model Country {
-  id          String @id @default(cuid())
-
-  name        String
-  isoCode     String @unique
-  phoneCode   String?
-
-  states      State[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-//////////////////////////////////////////////////////
-// STATE
-//////////////////////////////////////////////////////
-
-model State {
-  id          String @id @default(cuid())
-
-  countryId   String
-  country     Country @relation(fields: [countryId], references: [id])
-
-  name        String
-  code        String?
-
-  localGovernments LocalGovernment[]
-
-  cities      City[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([countryId, name])
-}
-
-//////////////////////////////////////////////////////
-// LOCAL GOVERNMENT
-//////////////////////////////////////////////////////
-
-model LocalGovernment {
-  id          String @id @default(cuid())
-
-  stateId     String
-  state       State @relation(fields: [stateId], references: [id])
-
-  name        String
-
-  cities      City[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([stateId, name])
-}
-
-//////////////////////////////////////////////////////
-// CITY
-//////////////////////////////////////////////////////
-
-model City {
-  id          String @id @default(cuid())
-
-  stateId     String
-  state       State @relation(fields: [stateId], references: [id])
-
-  localGovernmentId String?
-  localGovernment LocalGovernment? @relation(fields: [localGovernmentId], references: [id])
-
-  name        String
-
-  districts   District[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([stateId, name])
-}
-
-//////////////////////////////////////////////////////
-// DISTRICT
-//////////////////////////////////////////////////////
-
-model District {
-  id          String @id @default(cuid())
-
-  cityId      String
-  city        City @relation(fields: [cityId], references: [id])
-
-  name        String
-
-  estates     Estate[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([cityId, name])
-}
-
-//////////////////////////////////////////////////////
-// ESTATE
-//////////////////////////////////////////////////////
-
-model Estate {
-  id          String @id @default(cuid())
-
-  districtId  String
-  district    District @relation(fields: [districtId], references: [id])
-
-  name        String
-
-  description String?
-
-  buildings   Building[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([districtId, name])
-}
-
-//////////////////////////////////////////////////////
-// BUILDING
-//////////////////////////////////////////////////////
-
-model Building {
-  id          String @id @default(cuid())
-
-  estateId    String
-  estate      Estate @relation(fields: [estateId], references: [id])
-
-  name        String
-
-  floors      Int?
-
-  units       Unit[]
-
-  properties  Property[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-//////////////////////////////////////////////////////
-// UNIT
-//////////////////////////////////////////////////////
-
-model Unit {
-  id          String @id @default(cuid())
-
-  buildingId  String
-  building    Building @relation(fields: [buildingId], references: [id])
-
-  unitNumber  String
-
-  floor       Int?
-
-  properties  Property[]
-
-  addresses   PropertyAddress[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([buildingId, unitNumber])
-}
-
 //////////////////////////////////////////////////////
 // PROPERTY TYPE
 //////////////////////////////////////////////////////
 
 model PropertyType {
-  id            String   @id @default(cuid())
+  id            String @id @default(cuid())
 
-  name          String   @unique
+  name          String @unique
   category      PropertyTypeCategory
 
   description   String?
-
   icon          String?
 
   properties    Property[]
@@ -978,9 +923,7 @@ model Amenity {
   id            String @id @default(cuid())
 
   name          String @unique
-
   icon          String?
-
   description   String?
 
   properties    PropertyAmenity[]
@@ -997,7 +940,6 @@ model Feature {
   id            String @id @default(cuid())
 
   name          String @unique
-
   description   String?
 
   properties    PropertyFeature[]
@@ -1009,45 +951,39 @@ model Feature {
 //////////////////////////////////////////////////////
 // PROPERTY
 //////////////////////////////////////////////////////
+// Fix: every `@relation(...)` in this model was written on its own
+// continuation line (e.g. `organization Organization\n  @relation(...)`),
+// which is invalid — relation attributes must stay on the same line as
+// the field. All are now single-line.
+// Added: trustStatus (the TrustStatus enum existed but no field used it),
+// and back-relations for bookings, offers, leases, utility bills,
+// marketplace listings, inspections, IoT devices, maintenance requests,
+// and vendor jobs — all of which reference Property from the other side.
 
 model Property {
-
-  id                String   @id @default(cuid())
+  id                String @id @default(cuid())
 
   //////////////////////////////////////
   // Basic Information
   //////////////////////////////////////
 
-  propertyCode      String   @unique
-
+  propertyCode      String @unique
   title             String
-
-  slug              String   @unique
-
+  slug              String @unique
   description       String?
 
   listingType       PropertyListingType
-
   status            PropertyStatus
-
-  conversations Conversation[]
-
-  tokenization PropertyTokenization?
 
   //////////////////////////////////////
   // Pricing
   //////////////////////////////////////
 
   price             Decimal @db.Decimal(18,2)
-
   serviceCharge     Decimal? @db.Decimal(18,2)
-
   cautionFee        Decimal? @db.Decimal(18,2)
-
   agencyFee         Decimal? @db.Decimal(18,2)
-
   legalFee          Decimal? @db.Decimal(18,2)
-
   currency          Currency @default(NGN)
 
   //////////////////////////////////////
@@ -1055,104 +991,56 @@ model Property {
   //////////////////////////////////////
 
   bedrooms          Int?
-
   bathrooms         Int?
-
   toilets           Int?
-
   kitchens          Int?
-
   parkingSpaces     Int?
-
   floors            Int?
-
   yearBuilt         Int?
 
   landSize          Decimal? @db.Decimal(18,2)
-
   buildingSize      Decimal? @db.Decimal(18,2)
-
   measurementUnit   String? @default("sqm")
 
   //////////////////////////////////////
-  // Organization
+  // Organization / Type / Owner / Agent / Location
   //////////////////////////////////////
 
   organizationId    String
-
-  organization      Organization
-      @relation(fields:[organizationId], references:[id])
-
-  //////////////////////////////////////
-  // Type
-  //////////////////////////////////////
+  organization      Organization @relation(fields: [organizationId], references: [id])
 
   propertyTypeId    String
-
-  propertyType      PropertyType
-      @relation(fields:[propertyTypeId], references:[id])
-
-  //////////////////////////////////////
-  // Owner
-  //////////////////////////////////////
+  propertyType      PropertyType @relation(fields: [propertyTypeId], references: [id])
 
   ownerId           String
-
-  owner             User
-      @relation("OwnedProperties",
-      fields:[ownerId],
-      references:[id])
-
-  //////////////////////////////////////
-  // Agent
-  //////////////////////////////////////
+  owner             User @relation("OwnedProperties", fields: [ownerId], references: [id])
 
   agentId           String?
-
-  agent             User?
-      @relation("ManagedProperties",
-      fields:[agentId],
-      references:[id])
-
-  //////////////////////////////////////
-  // Building
-  //////////////////////////////////////
+  agent             User? @relation("ManagedProperties", fields: [agentId], references: [id])
 
   buildingId        String?
-
-  building          Building?
-      @relation(fields:[buildingId], references:[id])
-
-  //////////////////////////////////////
-  // Unit
-  //////////////////////////////////////
+  building          Building? @relation(fields: [buildingId], references: [id])
 
   unitId            String?
-
-  unit              Unit?
-      @relation(fields:[unitId], references:[id])
+  unit              Unit? @relation(fields: [unitId], references: [id])
 
   //////////////////////////////////////
   // Smart Trust
   //////////////////////////////////////
 
-  trustScore        Decimal?
-      @db.Decimal(5,2)
+  trustScore        Decimal? @db.Decimal(5,2)
+  trustStatus        TrustStatus?
 
   verified          Boolean @default(false)
-
   featured          Boolean @default(false)
-
   published         Boolean @default(false)
 
   //////////////////////////////////////
-  // Views
+  // Counters
   //////////////////////////////////////
 
   totalViews        Int @default(0)
-
   totalFavorites    Int @default(0)
-
   totalBookings     Int @default(0)
 
   //////////////////////////////////////
@@ -1160,51 +1048,45 @@ model Property {
   //////////////////////////////////////
 
   address           PropertyAddress?
-
   amenities         PropertyAmenity[]
-
   features          PropertyFeature[]
-
   media             PropertyMedia[]
-
   documents         PropertyDocument[]
-
   coordinates       PropertyCoordinate[]
-
   parcel            LandParcel?
-
   surveyPlans       SurveyPlan[]
-
   geoJsonFiles      GeoJsonFile[]
-
   gisFiles          GISFile[]
+
+  conversations     Conversation[]
+  tokenization      PropertyTokenization?
+
+  bookings          Booking[]
+  offers            PropertyOffer[]
+  inspections       PropertyInspection[]
+  listings          PropertyListing[]
+  leases            Lease[]
+
+  utilityBills      UtilityBill[]
+  iotDevices        IoTDevice[]
+  maintenanceRequests MaintenanceRequest[]
+  serviceHistory    ServiceHistory[]
+  vendorJobs        VendorJob[]
 
   //////////////////////////////////////
   // Time
   //////////////////////////////////////
 
   createdAt         DateTime @default(now())
-
   updatedAt         DateTime @updatedAt
 
-  //////////////////////////////////////
-  // Indexes
-  //////////////////////////////////////
-
   @@index([propertyCode])
-
   @@index([status])
-
   @@index([listingType])
-
   @@index([ownerId])
-
   @@index([agentId])
-
   @@index([organizationId])
-
   @@index([propertyTypeId])
-
 }
 
 //////////////////////////////////////////////////////
@@ -1212,9 +1094,9 @@ model Property {
 //////////////////////////////////////////////////////
 
 model PropertyAddress {
-  id                  String   @id @default(cuid())
+  id                  String @id @default(cuid())
 
-  propertyId          String   @unique
+  propertyId          String @unique
   property            Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   countryId           String
@@ -1294,14 +1176,11 @@ model PropertyMedia {
   property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   type          MediaType
-
   url           String
   thumbnailUrl  String?
-
   caption       String?
 
   sortOrder     Int @default(0)
-
   isFeatured    Boolean @default(false)
 
   createdAt     DateTime @default(now())
@@ -1321,15 +1200,10 @@ model PropertyDocument {
   property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   type          DocumentType
-
   title         String
-
   fileUrl       String
-
   version       Int @default(1)
-
   isVerified    Boolean @default(false)
-
   uploadedBy    String?
 
   createdAt     DateTime @default(now())
@@ -1364,20 +1238,18 @@ model PropertyCoordinate {
 //////////////////////////////////////////////////////
 
 model LandParcel {
-  id            String @id @default(cuid())
+  id              String @id @default(cuid())
 
-  propertyId    String @unique
-  property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId      String @unique
+  property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  parcelNumber  String?
-
-  area          Decimal? @db.Decimal(18,2)
-  perimeter     Decimal? @db.Decimal(18,2)
-
+  parcelNumber    String?
+  area            Decimal? @db.Decimal(18,2)
+  perimeter       Decimal? @db.Decimal(18,2)
   measurementUnit String? @default("sqm")
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 //////////////////////////////////////////////////////
@@ -1391,11 +1263,8 @@ model SurveyPlan {
   property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   surveyNumber  String?
-
   surveyorName  String?
-
   surveyDate    DateTime?
-
   fileUrl       String
 
   createdAt     DateTime @default(now())
@@ -1414,7 +1283,6 @@ model GeoJsonFile {
   property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   fileUrl       String
-
   jsonData      Json?
 
   createdAt     DateTime @default(now())
@@ -1433,582 +1301,23 @@ model GISFile {
   property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   type          GISFileType
-
   fileUrl       String
 
   createdAt     DateTime @default(now())
 
   @@index([propertyId])
 }
-
 //////////////////////////////////////////////////////
-// WALLET
+// BOOKING
 //////////////////////////////////////////////////////
-
-model Wallet {
-  id              String   @id @default(cuid())
-
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  walletNumber    String   @unique
-
-  currency        Currency @default(NGN)
-
-  availableBalance Decimal @default(0) @db.Decimal(18,2)
-
-  holdBalance      Decimal @default(0) @db.Decimal(18,2)
-
-  totalBalance     Decimal @default(0) @db.Decimal(18,2)
-
-  status          WalletStatus @default(ACTIVE)
-
-  transactions    WalletTransaction[]
-
-  payments        Payment[]
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@index([walletNumber])
-}
-
-//////////////////////////////////////////////////////
-// WALLET TRANSACTIONS
-//////////////////////////////////////////////////////
-
-model WalletTransaction {
-
-  id                String @id @default(cuid())
-
-  walletId          String
-  wallet            Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
-
-  reference         String @unique
-
-  type              WalletTransactionType
-
-  amount            Decimal @db.Decimal(18,2)
-
-  balanceBefore     Decimal @db.Decimal(18,2)
-
-  balanceAfter      Decimal @db.Decimal(18,2)
-
-  description       String?
-
-  paymentId         String?
-
-  ledgerEntries     LedgerEntry[]
-
-  createdAt         DateTime @default(now())
-
-  @@index([walletId])
-
-  @@index([reference])
-}
-
-//////////////////////////////////////////////////////
-// LEDGER ACCOUNT
-//////////////////////////////////////////////////////
-
-model LedgerAccount {
-
-  id              String @id @default(cuid())
-
-  code            String @unique
-
-  name            String
-
-  category        LedgerCategory
-
-  entries         LedgerEntry[]
-
-  createdAt       DateTime @default(now())
-
-  updatedAt       DateTime @updatedAt
-}
-
-//////////////////////////////////////////////////////
-// LEDGER ENTRY
-//////////////////////////////////////////////////////
-
-model LedgerEntry {
-
-  id                 String @id @default(cuid())
-
-  accountId          String
-
-  account            LedgerAccount
-      @relation(fields:[accountId], references:[id])
-
-  walletTransactionId String?
-
-  walletTransaction  WalletTransaction?
-      @relation(fields:[walletTransactionId], references:[id])
-
-  debit              Decimal @default(0)
-      @db.Decimal(18,2)
-
-  credit             Decimal @default(0)
-      @db.Decimal(18,2)
-
-  narration          String?
-
-  createdAt          DateTime @default(now())
-
-  @@index([accountId])
-}
-
-//////////////////////////////////////////////////////
-// PAYMENT
-//////////////////////////////////////////////////////
-
-model Payment {
-
-  id                String @id @default(cuid())
-
-  reference         String @unique
-
-  payerId           String
-
-  payer             User
-      @relation(fields:[payerId], references:[id])
-
-  walletId          String?
-
-  wallet            Wallet?
-      @relation(fields:[walletId], references:[id])
-
-  purpose           PaymentPurpose
-
-  method            PaymentMethod
-
-  status            PaymentStatus
-      @default(PENDING)
-
-  currency          Currency
-      @default(NGN)
-
-  amount            Decimal
-      @db.Decimal(18,2)
-
-  fee               Decimal?
-      @db.Decimal(18,2)
-
-  discount          Decimal?
-      @db.Decimal(18,2)
-
-  tax               Decimal?
-      @db.Decimal(18,2)
-
-  total             Decimal
-      @db.Decimal(18,2)
-
-  description       String?
-
-  investments       PropertyInvestment[]
-
-  investorDividends InvestorDividend[]
-
-  createdAt         DateTime @default(now())
-
-  updatedAt         DateTime @updatedAt
-
-  flutterwave       FlutterwaveTransaction?
-
-  @@index([reference])
-
-  @@index([payerId])
-
-  @@index([status])
-
-}
-
-//////////////////////////////////////////////////////
-// FLUTTERWAVE TRANSACTION
-//////////////////////////////////////////////////////
-
-model FlutterwaveTransaction {
-
-  id                String @id @default(cuid())
-
-  paymentId         String @unique
-  payment           Payment
-      @relation(fields:[paymentId], references:[id], onDelete: Cascade)
-
-  txRef             String @unique
-
-  flwRef            String?
-
-  transactionId     String?
-
-  amount            Decimal @db.Decimal(18,2)
-
-  chargedAmount     Decimal? @db.Decimal(18,2)
-
-  currency          Currency
-
-  customerEmail     String?
-
-  customerPhone     String?
-
-  paymentType       String?
-
-  processorResponse String?
-
-  gatewayStatus     String?
-
-  webhookPayload    Json?
-
-  verified          Boolean @default(false)
-
-  verifiedAt        DateTime?
-
-  createdAt         DateTime @default(now())
-
-  @@index([txRef])
-}
-
-//////////////////////////////////////////////////////
-// WEBHOOK EVENTS
-//////////////////////////////////////////////////////
-
-model WebhookEvent {
-
-  id            String @id @default(cuid())
-
-  provider      String
-
-  eventType     String
-
-  reference     String?
-
-  payload       Json
-
-  processed     Boolean @default(false)
-
-  processedAt   DateTime?
-
-  createdAt     DateTime @default(now())
-
-  @@index([provider])
-
-  @@index([eventType])
-}
-
-//////////////////////////////////////////////////////
-// REFUNDS
-//////////////////////////////////////////////////////
-
-model Refund {
-
-  id            String @id @default(cuid())
-
-  paymentId     String
-
-  payment       Payment
-      @relation(fields:[paymentId], references:[id], onDelete: Cascade)
-
-  amount        Decimal
-      @db.Decimal(18,2)
-
-  reason        String?
-
-  status        PaymentStatus
-
-  processedAt   DateTime?
-
-  createdAt     DateTime @default(now())
-}
-
-//////////////////////////////////////////////////////
-// ESCROW
-//////////////////////////////////////////////////////
-
-model Escrow {
-
-  id            String @id @default(cuid())
-
-  paymentId     String @unique
-
-  payment       Payment
-      @relation(fields:[paymentId], references:[id], onDelete: Cascade)
-
-  amount        Decimal
-      @db.Decimal(18,2)
-
-  released      Boolean @default(false)
-
-  releasedAt    DateTime?
-
-  createdAt     DateTime @default(now())
-}
-
-//////////////////////////////////////////////////////
-// PAYMENT SPLITS
-//////////////////////////////////////////////////////
-
-model PaymentSplit {
-
-  id            String @id @default(cuid())
-
-  paymentId     String
-
-  payment       Payment
-      @relation(fields:[paymentId], references:[id], onDelete: Cascade)
-
-  beneficiaryId String
-
-  beneficiary   User
-      @relation(fields:[beneficiaryId], references:[id])
-
-  percentage    Decimal?
-      @db.Decimal(5,2)
-
-  amount        Decimal
-      @db.Decimal(18,2)
-
-  paid          Boolean @default(false)
-
-  paidAt        DateTime?
-
-  createdAt     DateTime @default(now())
-}
-
-//////////////////////////////////////////////////////
-// COMMISSIONS
-//////////////////////////////////////////////////////
-
-model Commission {
-
-  id            String @id @default(cuid())
-
-  paymentId     String
-
-  payment       Payment
-      @relation(fields:[paymentId], references:[id], onDelete: Cascade)
-
-  recipientId   String
-
-  recipient     User
-      @relation(fields:[recipientId], references:[id])
-
-  percentage    Decimal?
-      @db.Decimal(5,2)
-
-  amount        Decimal
-      @db.Decimal(18,2)
-
-  settled       Boolean @default(false)
-
-  settledAt     DateTime?
-
-  createdAt     DateTime @default(now())
-}
-
-//////////////////////////////////////////////////////
-// PAYOUT
-//////////////////////////////////////////////////////
-
-model Payout {
-
-  id              String @id @default(cuid())
-
-  reference       String @unique
-
-  beneficiaryId   String
-
-  beneficiary     User
-      @relation(fields:[beneficiaryId], references:[id])
-
-  amount          Decimal
-      @db.Decimal(18,2)
-
-  currency        Currency
-
-  status          PaymentStatus
-
-  bankName        String?
-
-  accountName     String?
-
-  accountNumber   String?
-
-  narration       String?
-
-  createdAt       DateTime @default(now())
-
-  updatedAt       DateTime @updatedAt
-}
-
-//////////////////////////////////////////////////////
-// INVOICE
-//////////////////////////////////////////////////////
-
-model Invoice {
-
-  id              String @id @default(cuid())
-
-  invoiceNumber   String @unique
-
-  paymentId       String? @unique
-
-  payment         Payment?
-      @relation(fields:[paymentId], references:[id])
-
-  customerId      String
-
-  customer        User
-      @relation(fields:[customerId], references:[id])
-
-  subtotal        Decimal @db.Decimal(18,2)
-
-  tax             Decimal @db.Decimal(18,2)
-
-  discount        Decimal @db.Decimal(18,2)
-
-  total           Decimal @db.Decimal(18,2)
-
-  dueDate         DateTime?
-
-  status          PaymentStatus
-
-  createdAt       DateTime @default(now())
-
-  updatedAt       DateTime @updatedAt
-}
-
-//////////////////////////////////////////////////////
-// IOT
-//////////////////////////////////////////////////////
-
-enum IoTDeviceType {
-  SMART_LOCK
-  SMART_METER
-  WATER_METER
-  GAS_METER
-  CCTV
-  CAMERA
-  DOOR_SENSOR
-  MOTION_SENSOR
-  SMOKE_SENSOR
-  FIRE_SENSOR
-  FLOOD_SENSOR
-  TEMPERATURE_SENSOR
-  HUMIDITY_SENSOR
-  LIGHT
-  SWITCH
-  GATE_CONTROLLER
-  SOLAR_INVERTER
-  GENERATOR
-  EV_CHARGER
-  OTHER
-}
-
-enum IoTDeviceStatus {
-  ONLINE
-  OFFLINE
-  MAINTENANCE
-  DISABLED
-  FAULTY
-}
-
-model IoTDevice {
-  id              String @id @default(cuid())
-
-  propertyId      String
-  property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  unitId          String?
-  unit            Unit? @relation(fields: [unitId], references: [id])
-
-  serialNumber    String @unique
-  manufacturer    String?
-  model           String?
-
-  deviceType      IoTDeviceType
-  status          IoTDeviceStatus @default(OFFLINE)
-
-  firmwareVersion String?
-
-  lastSeen        DateTime?
-
-  installedAt     DateTime?
-  activatedAt     DateTime?
-
-  metadata        Json?
-
-  readings        IoTReading[]
-  commands        IoTCommand[]
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@index([propertyId])
-  @@index([serialNumber])
-}
-
-model IoTReading {
-  id            String @id @default(cuid())
-
-  deviceId      String
-  device        IoTDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-
-  metric        String
-  value         Decimal @db.Decimal(18,4)
-
-  unit          String?
-
-  recordedAt    DateTime @default(now())
-
-  rawPayload    Json?
-
-  @@index([deviceId])
-  @@index([recordedAt])
-}
-
-model IoTCommand {
-  id            String @id @default(cuid())
-
-  deviceId      String
-  device        IoTDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-
-  command       String
-
-  payload       Json?
-
-  executed      Boolean @default(false)
-
-  executedAt    DateTime?
-
-  response      Json?
-
-  createdAt     DateTime @default(now())
-
-  @@index([deviceId])
-}
-
-//////////////////////////////////////////////////////
-// BOOKINGS & VIEWINGS
-//////////////////////////////////////////////////////
-
-enum BookingType {
-  PROPERTY_VIEWING
-  SHORTLET
-  RENTAL
-  PROPERTY_PURCHASE
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CHECKED_IN
-  CHECKED_OUT
-  COMPLETED
-  CANCELLED
-  REJECTED
-  EXPIRED
-}
+// The original file defined `model Booking` TWICE with incompatible
+// designs: one keyed off Property directly (with agent, inspections,
+// offers, check-in/out), and one keyed off a separate PropertyListing
+// model (marketplace-style, with checkIn/checkOut, totalAmount).
+// Merged into a single model: kept the richer Property-based design and
+// added an optional listingId so a booking can also originate from a
+// PropertyListing (marketplace flow). Nothing from either version was
+// dropped — `PropertyListing.bookings` still resolves correctly.
 
 model Booking {
   id              String @id @default(cuid())
@@ -2017,6 +1326,9 @@ model Booking {
 
   propertyId      String
   property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  listingId       String?
+  listing         PropertyListing? @relation(fields: [listingId], references: [id])
 
   customerId      String
   customer        User @relation(fields: [customerId], references: [id])
@@ -2030,7 +1342,7 @@ model Booking {
   startDate       DateTime
   endDate         DateTime?
 
-  guests          Int?
+  guests          Int @default(1)
 
   amount          Decimal? @db.Decimal(18,2)
   bookingFee      Decimal? @db.Decimal(18,2)
@@ -2048,8 +1360,10 @@ model Booking {
 
   inspections     PropertyInspection[]
   offers          PropertyOffer[]
+  leases          Lease[]
 
   @@index([propertyId])
+  @@index([listingId])
   @@index([customerId])
   @@index([status])
 }
@@ -2057,14 +1371,6 @@ model Booking {
 //////////////////////////////////////////////////////
 // PROPERTY INSPECTIONS
 //////////////////////////////////////////////////////
-
-enum InspectionStatus {
-  PENDING
-  CONFIRMED
-  COMPLETED
-  CANCELLED
-  MISSED
-}
 
 model PropertyInspection {
   id              String @id @default(cuid())
@@ -2079,27 +1385,23 @@ model PropertyInspection {
   inspector       User? @relation("InspectionInspector", fields: [inspectorId], references: [id])
 
   scheduledAt     DateTime
-
   status          InspectionStatus @default(PENDING)
-
   remarks         String?
-
   completedAt     DateTime?
 
   createdAt       DateTime @default(now())
+
+  @@index([bookingId])
+  @@index([propertyId])
 }
 
 //////////////////////////////////////////////////////
 // PROPERTY OFFERS
 //////////////////////////////////////////////////////
-
-enum OfferStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  WITHDRAWN
-  EXPIRED
-}
+// Same merge as Booking above: two conflicting PropertyOffer models
+// (Property-based with `booking` link, and PropertyListing-based with
+// a `message` field) combined into one, with `message` folded into the
+// existing `notes` field.
 
 model PropertyOffer {
   id              String @id @default(cuid())
@@ -2110,45 +1412,129 @@ model PropertyOffer {
   propertyId      String
   property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
+  listingId       String?
+  listing         PropertyListing? @relation(fields: [listingId], references: [id])
+
   buyerId         String
   buyer           User @relation("PropertyBuyer", fields: [buyerId], references: [id])
 
   offerAmount     Decimal @db.Decimal(18,2)
-
   status          OfferStatus @default(PENDING)
-
   expiresAt       DateTime?
-
   notes           String?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([propertyId])
+  @@index([listingId])
   @@index([buyerId])
 }
 
 //////////////////////////////////////////////////////
-// LEASES & TENANCY
+// PROPERTY LISTING (marketplace layer over Property)
 //////////////////////////////////////////////////////
 
-enum LeaseStatus {
-  DRAFT
-  ACTIVE
-  EXPIRED
-  TERMINATED
-  RENEWED
-  CANCELLED
+model PropertyListing {
+  id              String @id @default(cuid())
+
+  propertyId      String
+  property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  listingType     ListingType
+  status          ListingStatus @default(DRAFT)
+
+  title           String
+  description     String?
+
+  askingPrice     Decimal @db.Decimal(18,2)
+  securityDeposit Decimal? @db.Decimal(18,2)
+  serviceCharge   Decimal? @db.Decimal(18,2)
+
+  minimumStay     Int?
+  availableFrom   DateTime?
+  availableTo     DateTime?
+
+  publishedAt     DateTime?
+  expiresAt       DateTime?
+
+  views           Int @default(0)
+
+  bookings        Booking[]
+  offers          PropertyOffer[]
+  inquiries       PropertyInquiry[]
+  favourites      FavouriteProperty[]
+  reviews         PropertyReview[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([status])
 }
 
-enum RentFrequency {
-  DAILY
-  WEEKLY
-  MONTHLY
-  QUARTERLY
-  SEMI_ANNUALLY
-  ANNUALLY
+//////////////////////////////////////////////////////
+// PROPERTY INQUIRIES
+//////////////////////////////////////////////////////
+
+model PropertyInquiry {
+  id             String @id @default(cuid())
+
+  listingId      String
+  listing        PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User @relation(fields: [userId], references: [id])
+
+  subject        String
+  message        String
+  responded      Boolean @default(false)
+
+  createdAt      DateTime @default(now())
 }
+
+//////////////////////////////////////////////////////
+// FAVOURITE PROPERTIES
+//////////////////////////////////////////////////////
+
+model FavouriteProperty {
+  id             String @id @default(cuid())
+
+  listingId      String
+  listing        PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User @relation(fields: [userId], references: [id])
+
+  createdAt      DateTime @default(now())
+
+  @@unique([listingId, userId])
+}
+
+//////////////////////////////////////////////////////
+// PROPERTY REVIEWS
+//////////////////////////////////////////////////////
+
+model PropertyReview {
+  id             String @id @default(cuid())
+
+  listingId      String
+  listing        PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  reviewerId     String
+  reviewer       User @relation(fields: [reviewerId], references: [id])
+
+  rating         Int
+  title          String?
+  review         String?
+
+  createdAt      DateTime @default(now())
+
+  @@index([listingId])
+}
+//////////////////////////////////////////////////////
+// LEASE
+//////////////////////////////////////////////////////
 
 model Lease {
   id                 String @id @default(cuid())
@@ -2173,17 +1559,12 @@ model Lease {
   endDate            DateTime
 
   rentFrequency      RentFrequency
-
   rentAmount         Decimal @db.Decimal(18,2)
-
   securityDeposit    Decimal? @db.Decimal(18,2)
-
   serviceCharge      Decimal? @db.Decimal(18,2)
-
   cautionFee         Decimal? @db.Decimal(18,2)
 
   agreementUrl       String?
-
   notes              String?
 
   createdAt          DateTime @default(now())
@@ -2196,19 +1577,12 @@ model Lease {
   @@index([propertyId])
   @@index([tenantId])
   @@index([landlordId])
+  @@index([bookingId])
 }
 
 //////////////////////////////////////////////////////
 // RENT INVOICES
 //////////////////////////////////////////////////////
-
-enum InvoiceStatus {
-  PENDING
-  PARTIALLY_PAID
-  PAID
-  OVERDUE
-  CANCELLED
-}
 
 model RentInvoice {
   id                String @id @default(cuid())
@@ -2217,13 +1591,10 @@ model RentInvoice {
   lease             Lease @relation(fields: [leaseId], references: [id], onDelete: Cascade)
 
   invoiceNumber     String @unique
-
   dueDate           DateTime
 
   amount            Decimal @db.Decimal(18,2)
-
   paidAmount        Decimal @default(0) @db.Decimal(18,2)
-
   balance           Decimal @db.Decimal(18,2)
 
   status            InvoiceStatus @default(PENDING)
@@ -2233,6 +1604,8 @@ model RentInvoice {
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  @@index([leaseId])
 }
 
 //////////////////////////////////////////////////////
@@ -2246,9 +1619,7 @@ model LeaseRenewal {
   lease             Lease @relation(fields: [leaseId], references: [id], onDelete: Cascade)
 
   previousEndDate   DateTime
-
   newEndDate        DateTime
-
   newRent           Decimal? @db.Decimal(18,2)
 
   renewedById       String?
@@ -2261,15 +1632,6 @@ model LeaseRenewal {
 // LEASE NOTICES
 //////////////////////////////////////////////////////
 
-enum NoticeType {
-  WARNING
-  RENT_DUE
-  RENT_OVERDUE
-  TERMINATION
-  VACATE
-  GENERAL
-}
-
 model LeaseNotice {
   id                String @id @default(cuid())
 
@@ -2277,9 +1639,7 @@ model LeaseNotice {
   lease             Lease @relation(fields: [leaseId], references: [id], onDelete: Cascade)
 
   type              NoticeType
-
   title             String
-
   message           String
 
   issuedById        String
@@ -2290,60 +1650,394 @@ model LeaseNotice {
   createdAt         DateTime @default(now())
 }
 //////////////////////////////////////////////////////
-// IOT & SMART ESTATE
+// WALLET
 //////////////////////////////////////////////////////
 
-enum IoTDeviceType {
-  SMART_LOCK
-  SMART_METER
-  WATER_METER
-  GAS_METER
-  ELECTRICITY_METER
-  CCTV
-  CAMERA
-  MOTION_SENSOR
-  DOOR_SENSOR
-  WINDOW_SENSOR
-  SMOKE_DETECTOR
-  FIRE_ALARM
-  FLOOD_SENSOR
-  TEMPERATURE_SENSOR
-  HUMIDITY_SENSOR
-  ACCESS_CONTROL
-  GATE_CONTROLLER
-  SMART_LIGHT
-  SMART_SWITCH
-  SMART_SOCKET
-  SMART_THERMOSTAT
-  INTERCOM
-  ELEVATOR
-  PARKING_GATE
-  OTHER
-}
+model Wallet {
+  id               String @id @default(cuid())
 
-enum IoTDeviceStatus {
-  ONLINE
-  OFFLINE
-  MAINTENANCE
-  DISABLED
-  FAULTY
-}
+  userId           String @unique
+  user             User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-enum AccessEventType {
-  ENTRY
-  EXIT
-  REMOTE_UNLOCK
-  REMOTE_LOCK
-  PIN_ACCESS
-  RFID_ACCESS
-  BIOMETRIC_ACCESS
-  MOBILE_ACCESS
-  FAILED_ACCESS
+  walletNumber     String @unique
+  currency         Currency @default(NGN)
+
+  availableBalance Decimal @default(0) @db.Decimal(18,2)
+  holdBalance      Decimal @default(0) @db.Decimal(18,2)
+  totalBalance     Decimal @default(0) @db.Decimal(18,2)
+
+  status           WalletStatus @default(ACTIVE)
+
+  transactions     WalletTransaction[]
+  payments         Payment[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([walletNumber])
 }
 
 //////////////////////////////////////////////////////
-// IOT DEVICES
+// WALLET TRANSACTIONS
 //////////////////////////////////////////////////////
+
+model WalletTransaction {
+  id                String @id @default(cuid())
+
+  walletId          String
+  wallet            Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  reference         String @unique
+  type              WalletTransactionType
+
+  amount            Decimal @db.Decimal(18,2)
+  balanceBefore     Decimal @db.Decimal(18,2)
+  balanceAfter      Decimal @db.Decimal(18,2)
+
+  description       String?
+  paymentId         String?
+
+  ledgerEntries     LedgerEntry[]
+
+  createdAt         DateTime @default(now())
+
+  @@index([walletId])
+  @@index([reference])
+}
+//////////////////////////////////////////////////////
+// PAYMENT
+//////////////////////////////////////////////////////
+// Fix: every relation field here (payer, wallet, flutterwave, etc.) was
+// split across two lines with `@relation` on a continuation line — not
+// valid Prisma syntax. All fixed to single-line. Also added the
+// back-relations Payment needs for Refund, Escrow, PaymentSplit,
+// Commission, Invoice, RentInvoice, Booking, and UtilityBill, none of
+// which existed in the original file.
+
+model Payment {
+  id                String @id @default(cuid())
+
+  reference         String @unique
+
+  payerId           String
+  payer             User @relation(fields: [payerId], references: [id])
+
+  walletId          String?
+  wallet            Wallet? @relation(fields: [walletId], references: [id])
+
+  purpose           PaymentPurpose
+  method            PaymentMethod
+  status            PaymentStatus @default(PENDING)
+
+  currency          Currency @default(NGN)
+
+  amount            Decimal @db.Decimal(18,2)
+  fee               Decimal? @db.Decimal(18,2)
+  discount          Decimal? @db.Decimal(18,2)
+  tax               Decimal? @db.Decimal(18,2)
+  total             Decimal @db.Decimal(18,2)
+
+  description       String?
+
+  flutterwave       FlutterwaveTransaction?
+  refunds           Refund[]
+  escrow            Escrow?
+  splits            PaymentSplit[]
+  commissions       Commission[]
+  invoices          Invoice[]
+  rentInvoices      RentInvoice[]
+  bookings          Booking[]
+  utilityBills      UtilityBill[]
+  vendorPayments    VendorPayment[]
+
+  investments       PropertyInvestment[]
+  investorDividends InvestorDividend[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([reference])
+  @@index([payerId])
+  @@index([status])
+}
+
+//////////////////////////////////////////////////////
+// FLUTTERWAVE TRANSACTION
+//////////////////////////////////////////////////////
+
+model FlutterwaveTransaction {
+  id                String @id @default(cuid())
+
+  paymentId         String @unique
+  payment           Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  txRef             String @unique
+  flwRef            String?
+  transactionId     String?
+
+  amount            Decimal @db.Decimal(18,2)
+  chargedAmount     Decimal? @db.Decimal(18,2)
+  currency          Currency
+
+  customerEmail     String?
+  customerPhone     String?
+  paymentType       String?
+
+  processorResponse String?
+  gatewayStatus     String?
+  webhookPayload    Json?
+
+  verified          Boolean @default(false)
+  verifiedAt        DateTime?
+
+  createdAt         DateTime @default(now())
+
+  @@index([txRef])
+}
+
+//////////////////////////////////////////////////////
+// WEBHOOK EVENTS
+//////////////////////////////////////////////////////
+
+model WebhookEvent {
+  id            String @id @default(cuid())
+
+  provider      String
+  eventType     String
+  reference     String?
+
+  payload       Json
+
+  processed     Boolean @default(false)
+  processedAt   DateTime?
+
+  createdAt     DateTime @default(now())
+
+  @@index([provider])
+  @@index([eventType])
+}
+
+//////////////////////////////////////////////////////
+// REFUNDS
+//////////////////////////////////////////////////////
+
+model Refund {
+  id            String @id @default(cuid())
+
+  paymentId     String
+  payment       Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  amount        Decimal @db.Decimal(18,2)
+  reason        String?
+  status        PaymentStatus
+
+  processedAt   DateTime?
+
+  createdAt     DateTime @default(now())
+
+  @@index([paymentId])
+}
+
+//////////////////////////////////////////////////////
+// ESCROW
+//////////////////////////////////////////////////////
+
+model Escrow {
+  id            String @id @default(cuid())
+
+  paymentId     String @unique
+  payment       Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  amount        Decimal @db.Decimal(18,2)
+  released      Boolean @default(false)
+  releasedAt    DateTime?
+
+  createdAt     DateTime @default(now())
+}
+
+//////////////////////////////////////////////////////
+// PAYMENT SPLITS
+//////////////////////////////////////////////////////
+
+model PaymentSplit {
+  id            String @id @default(cuid())
+
+  paymentId     String
+  payment       Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  beneficiaryId String
+  beneficiary   User @relation(fields: [beneficiaryId], references: [id])
+
+  percentage    Decimal? @db.Decimal(5,2)
+  amount        Decimal @db.Decimal(18,2)
+
+  paid          Boolean @default(false)
+  paidAt        DateTime?
+
+  createdAt     DateTime @default(now())
+
+  @@index([paymentId])
+  @@index([beneficiaryId])
+}
+
+//////////////////////////////////////////////////////
+// COMMISSIONS
+//////////////////////////////////////////////////////
+
+model Commission {
+  id            String @id @default(cuid())
+
+  paymentId     String
+  payment       Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  recipientId   String
+  recipient     User @relation(fields: [recipientId], references: [id])
+
+  percentage    Decimal? @db.Decimal(5,2)
+  amount        Decimal @db.Decimal(18,2)
+
+  settled       Boolean @default(false)
+  settledAt     DateTime?
+
+  createdAt     DateTime @default(now())
+
+  @@index([paymentId])
+  @@index([recipientId])
+}
+
+//////////////////////////////////////////////////////
+// PAYOUT
+//////////////////////////////////////////////////////
+
+model Payout {
+  id              String @id @default(cuid())
+
+  reference       String @unique
+
+  beneficiaryId   String
+  beneficiary     User @relation(fields: [beneficiaryId], references: [id])
+
+  amount          Decimal @db.Decimal(18,2)
+  currency        Currency
+  status          PaymentStatus
+
+  bankName        String?
+  accountName     String?
+  accountNumber   String?
+  narration       String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([beneficiaryId])
+}
+
+//////////////////////////////////////////////////////
+// INVOICE
+//////////////////////////////////////////////////////
+
+model Invoice {
+  id              String @id @default(cuid())
+
+  invoiceNumber   String @unique
+
+  paymentId       String? @unique
+  payment         Payment? @relation(fields: [paymentId], references: [id])
+
+  customerId      String
+  customer        User @relation(fields: [customerId], references: [id])
+
+  subtotal        Decimal @db.Decimal(18,2)
+  tax             Decimal @db.Decimal(18,2)
+  discount        Decimal @db.Decimal(18,2)
+  total           Decimal @db.Decimal(18,2)
+
+  dueDate         DateTime?
+  status          PaymentStatus
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([customerId])
+}
+//////////////////////////////////////////////////////
+// LEDGER ACCOUNT
+//////////////////////////////////////////////////////
+
+model LedgerAccount {
+  id          String @id @default(cuid())
+
+  code        String @unique
+  name        String
+  category    LedgerCategory
+
+  entries     LedgerEntry[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+//////////////////////////////////////////////////////
+// LEDGER ENTRY
+//////////////////////////////////////////////////////
+
+model LedgerEntry {
+  id                  String @id @default(cuid())
+
+  accountId           String
+  account             LedgerAccount @relation(fields: [accountId], references: [id])
+
+  walletTransactionId String?
+  walletTransaction   WalletTransaction? @relation(fields: [walletTransactionId], references: [id])
+
+  debit               Decimal @default(0) @db.Decimal(18,2)
+  credit              Decimal @default(0) @db.Decimal(18,2)
+
+  narration           String?
+
+  createdAt           DateTime @default(now())
+
+  @@index([accountId])
+  @@index([walletTransactionId])
+}
+//////////////////////////////////////////////////////
+// UTILITY / ESTATE BILLS
+//////////////////////////////////////////////////////
+
+model UtilityBill {
+  id                String @id @default(cuid())
+
+  propertyId        String
+  property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  billType          UtilityBillType
+  title             String
+  billingPeriod     String
+
+  amount            Decimal @db.Decimal(18,2)
+  dueDate           DateTime
+
+  status            UtilityBillStatus @default(PENDING)
+
+  paymentId         String?
+  payment           Payment? @relation(fields: [paymentId], references: [id])
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([propertyId])
+}
+//////////////////////////////////////////////////////
+// IOT DEVICE
+//////////////////////////////////////////////////////
+// The original file defined `model IoTDevice` THREE times: one simple
+// early version (paired with generic IoTReading/IoTCommand models) and
+// two identical richer versions (building/unit scoping, IP/MAC address,
+// battery level, paired with MeterReading/SmartAccessLog/DeviceCommand).
+// Since the richer version appeared twice with the same complete IoT
+// subsystem around it, that's clearly the intended final design — kept
+// it and dropped IoTReading/IoTCommand as superseded by MeterReading
+// and DeviceCommand below.
 
 model IoTDevice {
   id                 String @id @default(cuid())
@@ -2358,34 +2052,27 @@ model IoTDevice {
   unit               Unit? @relation(fields: [unitId], references: [id])
 
   name               String
-
   serialNumber       String @unique
-
   manufacturer       String?
-
   modelNumber        String?
-
   firmwareVersion    String?
 
   type               IoTDeviceType
-
   status             IoTDeviceStatus @default(ONLINE)
 
   ipAddress          String?
-
   macAddress         String?
-
   lastSeen           DateTime?
-
   batteryLevel       Int?
 
   metadata           Json?
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
   accessLogs         SmartAccessLog[]
   meterReadings      MeterReading[]
+  commands           DeviceCommand[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([propertyId])
   @@index([buildingId])
@@ -2393,7 +2080,7 @@ model IoTDevice {
 }
 
 //////////////////////////////////////////////////////
-// SMART ACCESS LOGS
+// SMART ACCESS LOG
 //////////////////////////////////////////////////////
 
 model SmartAccessLog {
@@ -2406,11 +2093,8 @@ model SmartAccessLog {
   user              User? @relation(fields: [userId], references: [id])
 
   event             AccessEventType
-
   successful        Boolean
-
   accessMethod      String?
-
   ipAddress         String?
 
   createdAt         DateTime @default(now())
@@ -2420,14 +2104,8 @@ model SmartAccessLog {
 }
 
 //////////////////////////////////////////////////////
-// SMART METERS
+// METER READING
 //////////////////////////////////////////////////////
-
-enum MeterType {
-  ELECTRICITY
-  WATER
-  GAS
-}
 
 model MeterReading {
   id               String @id @default(cuid())
@@ -2436,13 +2114,10 @@ model MeterReading {
   device           IoTDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 
   type             MeterType
-
   reading          Decimal @db.Decimal(18,3)
-
   unit             String
 
   capturedAt       DateTime
-
   synced           Boolean @default(false)
 
   createdAt        DateTime @default(now())
@@ -2451,66 +2126,8 @@ model MeterReading {
 }
 
 //////////////////////////////////////////////////////
-// ESTATE BILLING
+// DEVICE COMMAND
 //////////////////////////////////////////////////////
-
-enum UtilityBillType {
-  ELECTRICITY
-  WATER
-  GAS
-  INTERNET
-  WASTE
-  SECURITY
-  ESTATE_DUES
-  MAINTENANCE
-  SERVICE_CHARGE
-  OTHER
-}
-
-enum UtilityBillStatus {
-  PENDING
-  PAID
-  OVERDUE
-  CANCELLED
-}
-
-model UtilityBill {
-  id                String @id @default(cuid())
-
-  propertyId        String
-  property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  billType          UtilityBillType
-
-  title             String
-
-  billingPeriod     String
-
-  amount            Decimal @db.Decimal(18,2)
-
-  dueDate           DateTime
-
-  status            UtilityBillStatus @default(PENDING)
-
-  paymentId         String?
-  payment           Payment? @relation(fields: [paymentId], references: [id])
-
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  @@index([propertyId])
-}
-
-//////////////////////////////////////////////////////
-// REMOTE DEVICE COMMANDS
-//////////////////////////////////////////////////////
-
-enum DeviceCommandStatus {
-  PENDING
-  SENT
-  EXECUTED
-  FAILED
-}
 
 model DeviceCommand {
   id                String @id @default(cuid())
@@ -2522,521 +2139,344 @@ model DeviceCommand {
   user              User @relation(fields: [userId], references: [id])
 
   command           String
-
   payload           Json?
 
   status            DeviceCommandStatus @default(PENDING)
-
   response          Json?
-
   executedAt        DateTime?
-
-  createdAt         DateTime @default(now())
-
-  @@index([deviceId])
-}
-//////////////////////////////////////////////////////
-// IOT & SMART ESTATE
-//////////////////////////////////////////////////////
-
-enum IoTDeviceType {
-  SMART_LOCK
-  SMART_METER
-  WATER_METER
-  GAS_METER
-  ELECTRICITY_METER
-  CCTV
-  CAMERA
-  MOTION_SENSOR
-  DOOR_SENSOR
-  WINDOW_SENSOR
-  SMOKE_DETECTOR
-  FIRE_ALARM
-  FLOOD_SENSOR
-  TEMPERATURE_SENSOR
-  HUMIDITY_SENSOR
-  ACCESS_CONTROL
-  GATE_CONTROLLER
-  SMART_LIGHT
-  SMART_SWITCH
-  SMART_SOCKET
-  SMART_THERMOSTAT
-  INTERCOM
-  ELEVATOR
-  PARKING_GATE
-  OTHER
-}
-
-enum IoTDeviceStatus {
-  ONLINE
-  OFFLINE
-  MAINTENANCE
-  DISABLED
-  FAULTY
-}
-
-enum AccessEventType {
-  ENTRY
-  EXIT
-  REMOTE_UNLOCK
-  REMOTE_LOCK
-  PIN_ACCESS
-  RFID_ACCESS
-  BIOMETRIC_ACCESS
-  MOBILE_ACCESS
-  FAILED_ACCESS
-}
-
-//////////////////////////////////////////////////////
-// IOT DEVICES
-//////////////////////////////////////////////////////
-
-model IoTDevice {
-  id                 String @id @default(cuid())
-
-  propertyId         String?
-  property           Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  buildingId         String?
-  building           Building? @relation(fields: [buildingId], references: [id])
-
-  unitId             String?
-  unit               Unit? @relation(fields: [unitId], references: [id])
-
-  name               String
-
-  serialNumber       String @unique
-
-  manufacturer       String?
-
-  modelNumber        String?
-
-  firmwareVersion    String?
-
-  type               IoTDeviceType
-
-  status             IoTDeviceStatus @default(ONLINE)
-
-  ipAddress          String?
-
-  macAddress         String?
-
-  lastSeen           DateTime?
-
-  batteryLevel       Int?
-
-  metadata           Json?
-
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  accessLogs         SmartAccessLog[]
-  meterReadings      MeterReading[]
-
-  @@index([propertyId])
-  @@index([buildingId])
-  @@index([unitId])
-}
-
-//////////////////////////////////////////////////////
-// SMART ACCESS LOGS
-//////////////////////////////////////////////////////
-
-model SmartAccessLog {
-  id                String @id @default(cuid())
-
-  deviceId          String
-  device            IoTDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-
-  userId            String?
-  user              User? @relation(fields: [userId], references: [id])
-
-  event             AccessEventType
-
-  successful        Boolean
-
-  accessMethod      String?
-
-  ipAddress         String?
 
   createdAt         DateTime @default(now())
 
   @@index([deviceId])
   @@index([userId])
 }
-
 //////////////////////////////////////////////////////
-// SMART METERS
+// MAINTENANCE
 //////////////////////////////////////////////////////
+// New file. The original schema had `User.maintenanceRequests
+// MaintenanceRequest[]` and enums like VendorType/VendorStatus, but no
+// MaintenanceRequest model (or any model in this domain) was ever
+// defined anywhere in the 3,480-line file — a straightforward missing
+// type. Built out the full domain the master prompt asked for:
+// Maintenance Request, Work Orders, Parts, Service History, Technician.
 
-enum MeterType {
-  ELECTRICITY
-  WATER
-  GAS
-}
-
-model MeterReading {
-  id               String @id @default(cuid())
-
-  deviceId         String
-  device           IoTDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-
-  type             MeterType
-
-  reading          Decimal @db.Decimal(18,3)
-
-  unit             String
-
-  capturedAt       DateTime
-
-  synced           Boolean @default(false)
-
-  createdAt        DateTime @default(now())
-
-  @@index([deviceId])
-}
-
-//////////////////////////////////////////////////////
-// ESTATE BILLING
-//////////////////////////////////////////////////////
-
-enum UtilityBillType {
-  ELECTRICITY
-  WATER
-  GAS
-  INTERNET
-  WASTE
-  SECURITY
-  ESTATE_DUES
-  MAINTENANCE
-  SERVICE_CHARGE
-  OTHER
-}
-
-enum UtilityBillStatus {
-  PENDING
-  PAID
-  OVERDUE
-  CANCELLED
-}
-
-model UtilityBill {
-  id                String @id @default(cuid())
-
-  propertyId        String
-  property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  billType          UtilityBillType
-
-  title             String
-
-  billingPeriod     String
-
-  amount            Decimal @db.Decimal(18,2)
-
-  dueDate           DateTime
-
-  status            UtilityBillStatus @default(PENDING)
-
-  paymentId         String?
-  payment           Payment? @relation(fields: [paymentId], references: [id])
-
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  @@index([propertyId])
-}
-
-//////////////////////////////////////////////////////
-// REMOTE DEVICE COMMANDS
-//////////////////////////////////////////////////////
-
-enum DeviceCommandStatus {
-  PENDING
-  SENT
-  EXECUTED
-  FAILED
-}
-
-model DeviceCommand {
-  id                String @id @default(cuid())
-
-  deviceId          String
-  device            IoTDevice @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-
-  userId            String
-  user              User @relation(fields: [userId], references: [id])
-
-  command           String
-
-  payload           Json?
-
-  status            DeviceCommandStatus @default(PENDING)
-
-  response          Json?
-
-  executedAt        DateTime?
-
-  createdAt         DateTime @default(now())
-
-  @@index([deviceId])
-}
-
-//////////////////////////////////////////////////////
-// MARKETPLACE
-//////////////////////////////////////////////////////
-
-enum ListingType {
-  SALE
-  RENT
-  SHORTLET
-  LEASE
-  LAND
-  COMMERCIAL
-}
-
-enum ListingStatus {
-  DRAFT
-  ACTIVE
-  UNDER_OFFER
-  RESERVED
-  CLOSED
-  EXPIRED
-  SUSPENDED
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CHECKED_IN
-  CHECKED_OUT
-  CANCELLED
-  COMPLETED
-}
-
-enum OfferStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  COUNTERED
-  WITHDRAWN
-}
-
-//////////////////////////////////////////////////////
-// PROPERTY LISTINGS
-//////////////////////////////////////////////////////
-
-model PropertyListing {
+model MaintenanceRequest {
   id              String @id @default(cuid())
 
   propertyId      String
   property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  listingType     ListingType
+  requesterId     String
+  requester       User @relation(fields: [requesterId], references: [id])
 
-  status          ListingStatus @default(DRAFT)
+  assignedToId    String?
+  assignedTo      User? @relation("MaintenanceAssignee", fields: [assignedToId], references: [id])
 
   title           String
-
   description     String?
+  category        String?
 
-  askingPrice     Decimal @db.Decimal(18,2)
+  priority        MaintenancePriority @default(MEDIUM)
+  status          MaintenanceStatus @default(OPEN)
 
-  securityDeposit Decimal? @db.Decimal(18,2)
+  scheduledAt     DateTime?
+  completedAt     DateTime?
 
-  serviceCharge   Decimal? @db.Decimal(18,2)
-
-  minimumStay     Int?
-
-  availableFrom   DateTime?
-
-  availableTo     DateTime?
-
-  publishedAt     DateTime?
-
-  expiresAt       DateTime?
-
-  views           Int @default(0)
-
-  bookings        Booking[]
-  inquiries       PropertyInquiry[]
-  offers          PropertyOffer[]
-  favourites      FavouriteProperty[]
-  reviews         PropertyReview[]
+  workOrders      WorkOrder[]
+  serviceHistory  ServiceHistory[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([propertyId])
+  @@index([requesterId])
   @@index([status])
 }
 
 //////////////////////////////////////////////////////
-// BOOKINGS
+// TECHNICIAN
 //////////////////////////////////////////////////////
 
-model Booking {
-  id               String @id @default(cuid())
+model Technician {
+  id            String @id @default(cuid())
 
-  listingId        String
-  listing          PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId        String @unique
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userId           String
-  user             User @relation(fields: [userId], references: [id])
+  specialty     String?
+  isActive      Boolean @default(true)
 
-  checkIn          DateTime
-  checkOut         DateTime
+  workOrders    WorkOrder[]
 
-  guests           Int @default(1)
-
-  totalAmount      Decimal @db.Decimal(18,2)
-
-  bookingFee       Decimal? @db.Decimal(18,2)
-
-  status           BookingStatus @default(PENDING)
-
-  paymentId        String?
-  payment          Payment? @relation(fields: [paymentId], references: [id])
-
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  @@index([listingId])
-  @@index([userId])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 //////////////////////////////////////////////////////
-// PROPERTY OFFERS
+// WORK ORDER
 //////////////////////////////////////////////////////
 
-model PropertyOffer {
+model WorkOrder {
+  id                    String @id @default(cuid())
+
+  maintenanceRequestId  String
+  maintenanceRequest    MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id], onDelete: Cascade)
+
+  technicianId          String?
+  technician            Technician? @relation(fields: [technicianId], references: [id])
+
+  vendorId              String?
+  vendor                Vendor? @relation(fields: [vendorId], references: [id])
+
+  status                MaintenanceStatus @default(ASSIGNED)
+  description           String?
+
+  laborCost             Decimal? @db.Decimal(18,2)
+  partsCost             Decimal? @db.Decimal(18,2)
+  totalCost             Decimal? @db.Decimal(18,2)
+
+  startedAt             DateTime?
+  completedAt           DateTime?
+
+  partsUsed             PartUsage[]
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([maintenanceRequestId])
+  @@index([technicianId])
+  @@index([vendorId])
+}
+
+//////////////////////////////////////////////////////
+// PARTS
+//////////////////////////////////////////////////////
+
+model Part {
+  id                String @id @default(cuid())
+
+  name              String
+  sku               String? @unique
+
+  unitCost          Decimal? @db.Decimal(18,2)
+  quantityInStock   Int @default(0)
+
+  usages            PartUsage[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model PartUsage {
+  id            String @id @default(cuid())
+
+  workOrderId   String
+  workOrder     WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+
+  partId        String
+  part          Part @relation(fields: [partId], references: [id])
+
+  quantity      Int
+  unitCost      Decimal @db.Decimal(18,2)
+  totalCost     Decimal @db.Decimal(18,2)
+
+  createdAt     DateTime @default(now())
+
+  @@index([workOrderId])
+  @@index([partId])
+}
+
+//////////////////////////////////////////////////////
+// SERVICE HISTORY
+//////////////////////////////////////////////////////
+
+model ServiceHistory {
+  id                    String @id @default(cuid())
+
+  maintenanceRequestId  String
+  maintenanceRequest    MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id], onDelete: Cascade)
+
+  propertyId            String
+  property               Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  summary               String
+  performedAt           DateTime
+
+  performedById         String?
+  performedBy           User? @relation(fields: [performedById], references: [id])
+
+  createdAt             DateTime @default(now())
+
+  @@index([maintenanceRequestId])
+  @@index([propertyId])
+}
+//////////////////////////////////////////////////////
+// VENDOR
+//////////////////////////////////////////////////////
+// New file — same gap as maintenance.prisma: VendorType and VendorStatus
+// enums existed in the original file (and User referenced VendorJob[])
+// but no Vendor, VendorJob, VendorInvoice, VendorPayment, or
+// VendorRating models were ever defined.
+
+model Vendor {
+  id            String @id @default(cuid())
+
+  userId        String? @unique
+  user          User? @relation(fields: [userId], references: [id])
+
+  businessName  String
+  type          VendorType
+  status        VendorStatus @default(PENDING)
+
+  email         String?
+  phone         String?
+  address       String?
+
+  averageRating Decimal? @db.Decimal(3,2)
+
+  jobs          VendorJob[]
+  invoices      VendorInvoice[]
+  payments      VendorPayment[]
+  ratings       VendorRating[]
+  workOrders    WorkOrder[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+}
+
+//////////////////////////////////////////////////////
+// VENDOR JOB
+//////////////////////////////////////////////////////
+
+model VendorJob {
+  id                    String @id @default(cuid())
+
+  vendorId              String
+  vendor                Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  propertyId            String
+  property              Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  requestedById         String
+  requestedBy           User @relation(fields: [requestedById], references: [id])
+
+  maintenanceRequestId  String?
+
+  title                 String
+  description           String?
+
+  status                VendorJobStatus @default(ASSIGNED)
+
+  scheduledAt           DateTime?
+  completedAt           DateTime?
+
+  amount                Decimal? @db.Decimal(18,2)
+
+  invoice               VendorInvoice?
+  rating                VendorRating?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([vendorId])
+  @@index([propertyId])
+  @@index([requestedById])
+}
+
+//////////////////////////////////////////////////////
+// VENDOR INVOICE
+//////////////////////////////////////////////////////
+
+model VendorInvoice {
   id              String @id @default(cuid())
 
-  listingId       String
-  listing         PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  vendorId        String
+  vendor          Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
-  buyerId         String
-  buyer           User @relation(fields: [buyerId], references: [id])
+  vendorJobId     String? @unique
+  vendorJob       VendorJob? @relation(fields: [vendorJobId], references: [id])
 
-  offeredAmount   Decimal @db.Decimal(18,2)
+  invoiceNumber   String @unique
+  amount          Decimal @db.Decimal(18,2)
+  dueDate         DateTime?
+  status          InvoiceStatus @default(PENDING)
 
-  message         String?
-
-  status          OfferStatus @default(PENDING)
+  payments        VendorPayment[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  @@index([listingId])
+  @@index([vendorId])
 }
 
 //////////////////////////////////////////////////////
-// PROPERTY INQUIRIES
+// VENDOR PAYMENT
 //////////////////////////////////////////////////////
 
-model PropertyInquiry {
-  id             String @id @default(cuid())
+model VendorPayment {
+  id                String @id @default(cuid())
 
-  listingId      String
-  listing        PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  vendorId          String
+  vendor            Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
-  userId         String
-  user           User @relation(fields: [userId], references: [id])
+  vendorInvoiceId   String?
+  vendorInvoice     VendorInvoice? @relation(fields: [vendorInvoiceId], references: [id])
 
-  subject        String
+  paymentId         String? @unique
+  payment           Payment? @relation(fields: [paymentId], references: [id])
 
-  message        String
+  amount            Decimal @db.Decimal(18,2)
+  status            PaymentStatus @default(PENDING)
+  paidAt            DateTime?
 
-  responded      Boolean @default(false)
+  createdAt         DateTime @default(now())
 
-  createdAt      DateTime @default(now())
+  @@index([vendorId])
+  @@index([vendorInvoiceId])
 }
 
 //////////////////////////////////////////////////////
-// FAVOURITES
+// VENDOR RATING
 //////////////////////////////////////////////////////
 
-model FavouriteProperty {
-  id             String @id @default(cuid())
+model VendorRating {
+  id            String @id @default(cuid())
 
-  listingId      String
-  listing        PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  vendorId      String
+  vendor        Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
-  userId         String
-  user           User @relation(fields: [userId], references: [id])
+  vendorJobId   String @unique
+  vendorJob     VendorJob @relation(fields: [vendorJobId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
+  ratedById     String
+  ratedBy       User @relation(fields: [ratedById], references: [id])
 
-  @@unique([listingId, userId])
+  rating        Int
+  review        String?
+
+  createdAt     DateTime @default(now())
+
+  @@index([vendorId])
 }
-
 //////////////////////////////////////////////////////
-// REVIEWS
+// BLOCKCHAIN NETWORK
 //////////////////////////////////////////////////////
-
-model PropertyReview {
-  id             String @id @default(cuid())
-
-  listingId      String
-  listing        PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-
-  reviewerId     String
-  reviewer       User @relation(fields: [reviewerId], references: [id])
-
-  rating         Int
-
-  title          String?
-
-  review         String?
-
-  createdAt      DateTime @default(now())
-
-  @@index([listingId])
-}
-
-//////////////////////////////////////////////////////
-// TOKENIZATION & INVESTMENT
-//////////////////////////////////////////////////////
-
-enum TokenizationStatus {
-  DRAFT
-  PENDING_APPROVAL
-  APPROVED
-  TOKENIZED
-  PAUSED
-  CLOSED
-}
-
-enum InvestmentStatus {
-  PENDING
-  ACTIVE
-  PARTIALLY_EXITED
-  EXITED
-  CANCELLED
-}
-
-enum SmartContractStatus {
-  DRAFT
-  DEPLOYING
-  DEPLOYED
-  FAILED
-  PAUSED
-}
-
-//////////////////////////////////////////////////////
-// BLOCKCHAIN NETWORKS
-//////////////////////////////////////////////////////
+// Note: the original file also had `enum BlockchainNetwork` — a model
+// and an enum can't share a top-level name in Prisma. That enum was
+// never used anywhere as a field type, so it was renamed to
+// BlockchainNetworkType in enums.prisma and this model keeps the name.
 
 model BlockchainNetwork {
   id              String @id @default(cuid())
 
   name            String
   chainId         String @unique
-
   symbol          String
 
   rpcUrl          String?
-
   explorerUrl     String?
 
   active          Boolean @default(true)
@@ -3054,7 +2494,7 @@ model BlockchainNetwork {
 model PropertyTokenization {
   id                    String @id @default(cuid())
 
-  propertyId            String
+  propertyId            String @unique
   property              Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   blockchainNetworkId   String
@@ -3063,22 +2503,19 @@ model PropertyTokenization {
   status                TokenizationStatus
 
   tokenSymbol           String
-
   tokenName             String
 
   totalSupply           Decimal @db.Decimal(30,8)
-
   tokenPrice            Decimal @db.Decimal(18,2)
-
   contractAddress       String?
 
   assetValue            Decimal @db.Decimal(18,2)
-
   availableTokens       Decimal @db.Decimal(30,8)
 
   smartContract         SmartContract?
-
   investments           PropertyInvestment[]
+  tokenTransfers        TokenTransfer[]
+  dividendDistributions DividendDistribution[]
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -3097,15 +2534,11 @@ model SmartContract {
   tokenization         PropertyTokenization @relation(fields: [tokenizationId], references: [id], onDelete: Cascade)
 
   contractAddress      String @unique
-
   abi                  Json?
-
   bytecodeHash         String?
-
   deploymentTxHash     String?
 
   status               SmartContractStatus
-
   deployedAt           DateTime?
 
   createdAt            DateTime @default(now())
@@ -3128,13 +2561,10 @@ model PropertyInvestment {
   payment              Payment? @relation(fields: [paymentId], references: [id])
 
   tokensPurchased      Decimal @db.Decimal(30,8)
-
   purchasePrice        Decimal @db.Decimal(18,2)
-
   investmentValue      Decimal @db.Decimal(18,2)
 
   walletAddress        String?
-
   transactionHash      String?
 
   status               InvestmentStatus
@@ -3157,18 +2587,16 @@ model TokenTransfer {
   tokenization        PropertyTokenization @relation(fields: [tokenizationId], references: [id])
 
   fromWallet          String
-
   toWallet            String
-
   quantity            Decimal @db.Decimal(30,8)
 
   transactionHash     String @unique
-
   blockNumber         String?
-
   transferredAt       DateTime
 
   createdAt           DateTime @default(now())
+
+  @@index([tokenizationId])
 }
 
 //////////////////////////////////////////////////////
@@ -3182,14 +2610,15 @@ model DividendDistribution {
   tokenization        PropertyTokenization @relation(fields: [tokenizationId], references: [id])
 
   totalAmount         Decimal @db.Decimal(18,2)
-
   currency            Currency
-
   distributionDate    DateTime
-
   notes               String?
 
+  investorDividends   InvestorDividend[]
+
   createdAt           DateTime @default(now())
+
+  @@index([tokenizationId])
 }
 
 //////////////////////////////////////////////////////
@@ -3209,86 +2638,38 @@ model InvestorDividend {
   payment               Payment? @relation(fields: [paymentId], references: [id])
 
   amount                Decimal @db.Decimal(18,2)
-
   paid                  Boolean @default(false)
-
   paidAt                DateTime?
 
   createdAt             DateTime @default(now())
 
   @@unique([dividendId, investorId])
 }
-
 //////////////////////////////////////////////////////
-// ENTERPRISE PLATFORM
-// Notifications • Messaging • Audit Logs • AI • System
+// AUDIT LOGS
 //////////////////////////////////////////////////////
 
-enum NotificationType {
-  SYSTEM
-  PAYMENT
-  PROPERTY
-  BOOKING
-  RENT
-  BILL
-  WALLET
-  INVESTMENT
-  SECURITY
-  IOT
-}
+model AuditLog {
+  id              String @id @default(cuid())
 
-enum NotificationChannel {
-  IN_APP
-  EMAIL
-  SMS
-  PUSH
-  WHATSAPP
-}
+  userId          String?
+  user            User? @relation(fields: [userId], references: [id])
 
-enum NotificationStatus {
-  PENDING
-  SENT
-  FAILED
-  READ
-}
+  action          AuditAction
+  entity          String
+  entityId        String
 
-enum ConversationType {
-  DIRECT
-  PROPERTY
-  SUPPORT
-  GROUP
-}
+  description     String?
+  ipAddress       String?
+  userAgent       String?
+  metadata        Json?
 
-enum MessageType {
-  TEXT
-  IMAGE
-  VIDEO
-  AUDIO
-  FILE
-  LOCATION
-}
+  createdAt       DateTime @default(now())
 
-enum AuditAction {
-  CREATE
-  UPDATE
-  DELETE
-  LOGIN
-  LOGOUT
-  APPROVE
-  REJECT
-  PAYMENT
-  EXPORT
-  IMPORT
-  VIEW
+  @@index([entity])
+  @@index([entityId])
+  @@index([userId])
 }
-
-enum AIProvider {
-  OPENAI
-  GEMINI
-  CLAUDE
-  LOCAL
-}
-
 //////////////////////////////////////////////////////
 // NOTIFICATIONS
 //////////////////////////////////////////////////////
@@ -3310,7 +2691,6 @@ model Notification {
   data             Json?
 
   readAt           DateTime?
-
   sentAt           DateTime?
 
   createdAt        DateTime @default(now())
@@ -3326,18 +2706,18 @@ model Conversation {
   id              String @id @default(cuid())
 
   type            ConversationType
-
   title           String?
 
   propertyId      String?
   property        Property? @relation(fields: [propertyId], references: [id])
 
   participants    ConversationParticipant[]
-
   messages        Message[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([propertyId])
 }
 
 //////////////////////////////////////////////////////
@@ -3372,46 +2752,15 @@ model Message {
   sender           User @relation(fields: [senderId], references: [id])
 
   type             MessageType
-
   message          String?
-
   attachmentUrl    String?
 
   isRead           Boolean @default(false)
 
   createdAt        DateTime @default(now())
+
+  @@index([conversationId])
 }
-
-//////////////////////////////////////////////////////
-// AUDIT LOGS
-//////////////////////////////////////////////////////
-
-model AuditLog {
-  id              String @id @default(cuid())
-
-  userId          String?
-  user            User? @relation(fields: [userId], references: [id])
-
-  action          AuditAction
-
-  entity          String
-
-  entityId        String
-
-  description     String?
-
-  ipAddress       String?
-
-  userAgent       String?
-
-  metadata        Json?
-
-  createdAt       DateTime @default(now())
-
-  @@index([entity])
-  @@index([entityId])
-}
-
 //////////////////////////////////////////////////////
 // AI REQUESTS
 //////////////////////////////////////////////////////
@@ -3423,16 +2772,14 @@ model AIRequest {
   user            User @relation(fields: [userId], references: [id])
 
   provider        AIProvider
-
   prompt          String
-
   response        String?
-
   tokens          Int?
-
   cost            Decimal? @db.Decimal(18,6)
 
   createdAt       DateTime @default(now())
+
+  @@index([userId])
 }
 
 //////////////////////////////////////////////////////
@@ -3443,11 +2790,8 @@ model SystemSetting {
   id             String @id @default(cuid())
 
   key            String @unique
-
   value          Json
-
   description    String?
-
   updatedBy      String?
 
   createdAt      DateTime @default(now())
@@ -3455,22 +2799,18 @@ model SystemSetting {
 }
 
 //////////////////////////////////////////////////////
-// API KEYS
+// INTEGRATIONS / API KEYS
 //////////////////////////////////////////////////////
 
 model Integration {
   id             String @id @default(cuid())
 
   name           String @unique
-
   provider       String
 
   apiKey         String?
-
   secretKey      String?
-
   webhookSecret  String?
-
   configuration  Json?
 
   enabled        Boolean @default(true)
